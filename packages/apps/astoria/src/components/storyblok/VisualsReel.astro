@@ -1,6 +1,6 @@
 ---
 import Visual from 'components/shared/Visual.astro';
-import { publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
+import { editable, publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
 
 type ReelItem = SbBlok & { visual?: Asset; link?: Multilink };
 
@@ -13,7 +13,7 @@ const items = blok.newItems ?? blok.items ?? [];
 const justify = blok.alignment === 'left' ? 'justify-start' : 'justify-center';
 ---
 
-<section class="tt-block py-32">
+<section class="tt-block py-32" {...editable(blok)}>
 	<div class:list={['flex flex-wrap items-center gap-x-48 gap-y-24', justify]}>
 		{
 			items.map(item => (

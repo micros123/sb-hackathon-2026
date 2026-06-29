@@ -2,6 +2,7 @@
 import type { SbBlokData } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
 import RichText from 'basedrum/components/atoms/rich-text/RichText';
+import { editable } from 'utils/storyblok';
 import { classifyBlok, type SbBlok } from './BlokUtils';
 
 type Props = { blok: SbBlok };
@@ -14,7 +15,11 @@ const withProtocol = (source: string): string =>
 	source.startsWith('//') ? `https:${source}` : source;
 ---
 
-<div class="astoria-blok tt-block flex flex-col gap-16 py-24" data-component={blok.component}>
+<div
+	class="astoria-blok tt-block flex flex-col gap-16 py-24"
+	data-component={blok.component}
+	{...editable(blok)}
+>
 	{
 		isInspecting && (
 			<span class="self-start rounded-4 bg-grey10 px-8 py-4 font-proxima text-body2 text-grey60">

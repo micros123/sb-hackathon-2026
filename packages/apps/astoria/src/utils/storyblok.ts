@@ -1,5 +1,10 @@
-import { useStoryblokApi } from '@storyblok/astro';
+import { storyblokEditable, useStoryblokApi } from '@storyblok/astro';
 import { bindStoryblokHelpers } from '@drumkit/storyblok/api/bindStoryblokHelpers';
+
+//* Adds the data-blok-* attributes the Storyblok Visual Editor needs for
+//* click-to-edit. Spread onto the root element of every rendered blok.
+export const editable = (blok: unknown) =>
+	storyblokEditable(blok as Parameters<typeof storyblokEditable>[0]);
 
 export const contentVersion =
 	(import.meta.env.STORYBLOK_CONTENT_VERSION as 'draft' | 'published') ?? 'draft';

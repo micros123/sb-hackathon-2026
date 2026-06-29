@@ -1,7 +1,7 @@
 ---
 import RichText from 'components/shared/RichText.astro';
 import Visual from 'components/shared/Visual.astro';
-import { publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
+import { editable, publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
 
 type OverlayItem = SbBlok & {
 	key?: string;
@@ -18,7 +18,7 @@ const { blok } = Astro.props as Props;
 const items = blok.items ?? [];
 ---
 
-<section class="bg-black">
+<section class="bg-black" {...editable(blok)}>
 	<div class="tt-block py-48 desktop:py-64">
 		<RichText text={blok.title} class="headline1 mb-32 text-center text-white" />
 
@@ -28,6 +28,7 @@ const items = blok.items ?? [];
 					<a
 						href={publicHref(item.link)}
 						class="group relative flex min-h-[320px] flex-col justify-end overflow-hidden rounded-20 p-32 no-underline desktop:min-h-[440px]"
+						{...editable(item)}
 					>
 						<Visual
 							visual={item.visual}

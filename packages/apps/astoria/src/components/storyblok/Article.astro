@@ -2,7 +2,7 @@
 import RichText from 'components/shared/RichText.astro';
 import Visual from 'components/shared/Visual.astro';
 import CtaButton from 'components/shared/CtaButton.astro';
-import type { Asset, Multilink, SbBlok } from 'utils/storyblok';
+import { editable, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
 
 type Cta = SbBlok & { link?: Multilink; label?: string; title?: string; text?: string };
 
@@ -21,7 +21,7 @@ const { blok } = Astro.props as Props;
 const ctas = blok.ctas ?? [];
 ---
 
-<section class="tt-block py-40 desktop:py-56">
+<section class="tt-block py-40 desktop:py-56" {...editable(blok)}>
 	<div class="mx-auto flex max-w-3xl flex-col items-center gap-16 text-center">
 		<RichText text={blok.subtitle} class="font-proxima_bold text-body1 uppercase text-red" />
 		<RichText text={blok.title} class="headline1" />

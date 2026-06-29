@@ -1,7 +1,7 @@
 ---
 import Visual from 'components/shared/Visual.astro';
 import CtaButton from 'components/shared/CtaButton.astro';
-import { publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
+import { editable, publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
 
 type TripleItem = SbBlok & {
 	title?: string;
@@ -20,7 +20,7 @@ const { blok } = Astro.props as Props;
 const blocks = blok.blocks ?? [];
 ---
 
-<section class="tt-block py-40 desktop:py-56">
+<section class="tt-block py-40 desktop:py-56" {...editable(blok)}>
 	<div class="grid grid-cols-1 gap-16 desktop:grid-cols-3">
 		{
 			blocks.map(item => {
@@ -29,6 +29,7 @@ const blocks = blok.blocks ?? [];
 					<a
 						href={publicHref(item.link)}
 						class="group relative flex min-h-[360px] flex-col justify-end overflow-hidden rounded-20 p-32 no-underline"
+						{...editable(item)}
 					>
 						<Visual
 							visual={item.desktopImage}

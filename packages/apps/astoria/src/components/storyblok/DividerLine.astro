@@ -1,5 +1,5 @@
 ---
-import type { SbBlok } from 'utils/storyblok';
+import { editable, type SbBlok } from 'utils/storyblok';
 
 type Props = { blok: SbBlok & { color?: string; width?: string } };
 
@@ -8,6 +8,6 @@ const colorClass = blok.color === 'black' ? 'border-grey20' : 'border-grey10';
 const isFullWidth = blok.width === 'FULL_WIDTH';
 ---
 
-<div class:list={[!isFullWidth && 'tt-block']}>
+<div class:list={[!isFullWidth && 'tt-block']} {...editable(blok)}>
 	<hr class:list={['border-t', colorClass, isFullWidth ? 'w-full' : 'mx-auto']} />
 </div>

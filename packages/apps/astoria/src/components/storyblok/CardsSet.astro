@@ -1,7 +1,7 @@
 ---
 import RichText from 'components/shared/RichText.astro';
 import Visual from 'components/shared/Visual.astro';
-import { publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
+import { editable, publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
 
 type CardItem = SbBlok & {
 	title?: unknown;
@@ -18,13 +18,14 @@ const { blok } = Astro.props as Props;
 const cards = blok.cards ?? [];
 ---
 
-<section class="tt-block py-40 desktop:py-56">
+<section class="tt-block py-40 desktop:py-56" {...editable(blok)}>
 	<div class="grid grid-cols-1 gap-24 tablet:grid-cols-2 desktop:grid-cols-3">
 		{
 			cards.map(card => (
 				<a
 					href={publicHref(card.link)}
 					class="group flex flex-col overflow-hidden rounded-20 border border-grey20 no-underline transition-shadow hover:shadow-lg"
+					{...editable(card)}
 				>
 					<Visual
 						visual={card.visual}

@@ -22,5 +22,21 @@ const { title = 'Astoria', audience } = Astro.props as Props;
 		<Header audience={audience} />
 		<slot />
 		<Footer />
+
+		<script>
+			import { loadStoryblokBridge } from '@storyblok/astro';
+
+			//* Only inside the Storyblok Visual Editor (its iframe adds _storyblok params).
+			//* The bridge enables click-to-edit highlighting; we reload on change/publish
+			//* so the SSR page re-renders the latest draft.
+			const isEditor = new URLSearchParams(window.location.search).has('_storyblok');
+
+			if (isEditor) {
+				loadStoryblokBridge().then(() => {
+					const bridge = new window.StoryblokBridge();
+					bridge.on(['change', 'published'], () => window.location.reload());
+				});
+			}
+		</script>
 	</body>
 </html>
