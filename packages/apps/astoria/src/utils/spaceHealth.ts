@@ -12,6 +12,7 @@ export type ComponentRow = {
 	totalUsage: number;
 	asRootUsage: number;
 	nestedUsage: number;
+	pageSectionUsage: number;
 	storyCount: number;
 };
 
@@ -28,6 +29,7 @@ export type SpaceHealthReport = {
 		nestedComponents: number;
 		universalComponents: number;
 		unclassifiedComponents: number;
+		pageSectionComponents: number;
 		withIcon: number;
 		withColor: number;
 		withPreview: number;
@@ -105,18 +107,27 @@ export async function fetchAllStories(
 	return stories.filter(story => story.content);
 }
 
-type UsageCounts = { total: number; asRoot: number; nested: number; stories: Set<string> };
+type UsageCounts = {
+	total: number;
+	asRoot: number;
+	nested: number;
+	pageSection: number;
+	stories: Set<string>;
+};
+
+const emptyCounts = (): UsageCounts => ({
+	total: 0,
+	asRoot: 0,
+	nested: 0,
+	pageSection: 0,
+	stories: new Set<string>(),
+});
 
 export function countComponentUsage(stories: Story[]): Map<string, UsageCounts> {
 	const counts = new Map<string, UsageCounts>();
 
 	const bump = (name: string, isRoot: boolean, slug: string) => {
-		const entry = counts.get(name) ?? {
-			total: 0,
-			asRoot: 0,
-			nested: 0,
-			stories: new Set<string>(),
-		};
+		const entry = counts.get(name) ?? emptyCounts();
 		entry.total++;
 		if (isRoot) entry.asRoot++;
 		else entry.nested++;
@@ -139,8 +150,22 @@ export function countComponentUsage(stories: Story[]): Map<string, UsageCounts> 
 		}
 	};
 
+	const countPageSections = (rootContent: Record<string, unknown>) => {
+		const sections = rootContent.components;
+		if (!Array.isArray(sections)) return;
+		for (const section of sections) {
+			const component = (section as Record<string, unknown>)?.component;
+			if (typeof component === 'string') {
+				const entry = counts.get(component) ?? emptyCounts();
+				entry.pageSection++;
+				counts.set(component, entry);
+			}
+		}
+	};
+
 	for (const story of stories) {
 		walk(story.content, story.full_slug, true);
+		if (typeof story.content?.component === 'string') countPageSections(story.content);
 	}
 
 	return counts;
@@ -169,6 +194,7 @@ export function buildReport(
 				totalUsage: counts?.total ?? 0,
 				asRootUsage: counts?.asRoot ?? 0,
 				nestedUsage: counts?.nested ?? 0,
+				pageSectionUsage: counts?.pageSection ?? 0,
 				storyCount: counts?.stories.size ?? 0,
 			};
 		})
@@ -183,6 +209,7 @@ export function buildReport(
 		universalComponents: components.filter(row => row.classification === 'universal').length,
 		unclassifiedComponents: components.filter(row => row.classification === 'unclassified')
 			.length,
+		pageSectionComponents: components.filter(row => row.pageSectionUsage > 0).length,
 		withIcon: components.filter(row => row.hasIcon).length,
 		withColor: components.filter(row => row.hasColor).length,
 		withPreview: components.filter(row => row.hasPreview).length,

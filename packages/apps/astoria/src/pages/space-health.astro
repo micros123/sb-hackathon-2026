@@ -1,5 +1,6 @@
 ---
-const endpoint = '/api/space-health';
+const staticData = '/space-health.json';
+const liveEndpoint = '/api/space-health';
 ---
 
 <!doctype html>
@@ -17,8 +18,12 @@ const endpoint = '/api/space-health';
 				--text: #e6e8ee;
 				--muted: #9aa1b1;
 				--accent: #09b3af;
-				--warn: #f0a020;
+				--page: #09b3af;
+				--nested: #f0a020;
+				--universal: #7e8cff;
+				--unclassified: #6b7280;
 				--bad: #e2526b;
+				--good: #4caf7d;
 			}
 			* {
 				box-sizing: border-box;
@@ -37,7 +42,30 @@ const endpoint = '/api/space-health';
 			.sub {
 				color: var(--muted);
 				font-size: 13px;
+				margin-bottom: 20px;
+			}
+			.sourcebar {
+				display: flex;
+				gap: 10px;
+				align-items: center;
 				margin-bottom: 24px;
+				flex-wrap: wrap;
+			}
+			button {
+				background: var(--panel-2);
+				border: 1px solid var(--line);
+				color: var(--text);
+				border-radius: 8px;
+				padding: 8px 12px;
+				font-size: 13px;
+				cursor: pointer;
+			}
+			button:hover {
+				border-color: var(--accent);
+			}
+			button:disabled {
+				opacity: 0.5;
+				cursor: default;
 			}
 			.state {
 				color: var(--muted);
@@ -49,9 +77,9 @@ const endpoint = '/api/space-health';
 			}
 			.cards {
 				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+				grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
 				gap: 12px;
-				margin-bottom: 28px;
+				margin-bottom: 24px;
 			}
 			.card {
 				background: var(--panel);
@@ -60,7 +88,7 @@ const endpoint = '/api/space-health';
 				padding: 16px;
 			}
 			.card .num {
-				font-size: 28px;
+				font-size: 26px;
 				font-weight: 700;
 			}
 			.card .lbl {
@@ -74,7 +102,7 @@ const endpoint = '/api/space-health';
 				display: grid;
 				grid-template-columns: 1fr 1fr;
 				gap: 20px;
-				margin-bottom: 28px;
+				margin-bottom: 24px;
 			}
 			@media (max-width: 880px) {
 				.grid2 {
@@ -94,54 +122,86 @@ const endpoint = '/api/space-health';
 				letter-spacing: 0.5px;
 				color: var(--muted);
 			}
-			.bar-row {
+			.chart {
 				display: flex;
+				gap: 18px;
 				align-items: center;
-				gap: 10px;
-				margin-bottom: 7px;
+			}
+			.chart svg {
+				flex: 0 0 auto;
+			}
+			.slice {
+				cursor: pointer;
+				transition: opacity 0.15s;
+			}
+			.slice:hover {
+				opacity: 0.85;
+			}
+			.legend {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
 				font-size: 13px;
 			}
-			.bar-row .name {
-				width: 190px;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
+			.legend .item {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				cursor: pointer;
+				padding: 3px 6px;
+				border-radius: 6px;
 			}
-			.bar-track {
-				flex: 1;
+			.legend .item:hover {
 				background: var(--panel-2);
-				border-radius: 4px;
-				height: 16px;
-				overflow: hidden;
 			}
-			.bar-fill {
-				height: 100%;
-				background: var(--accent);
+			.legend .item.active {
+				background: var(--panel-2);
+				outline: 1px solid var(--accent);
 			}
-			.bar-row .val {
-				width: 44px;
-				text-align: right;
+			.legend .swatch {
+				width: 11px;
+				height: 11px;
+				border-radius: 3px;
+				flex: 0 0 auto;
+			}
+			.legend .count {
 				color: var(--muted);
+				margin-left: auto;
 			}
 			.controls {
 				display: flex;
-				gap: 10px;
+				gap: 8px;
 				align-items: center;
-				margin-bottom: 12px;
+				margin-bottom: 14px;
 				flex-wrap: wrap;
 			}
-			input[type='search'],
-			select {
+			.chip {
+				background: var(--panel-2);
+				border: 1px solid var(--line);
+				color: var(--muted);
+				border-radius: 20px;
+				padding: 6px 12px;
+				font-size: 12px;
+				cursor: pointer;
+			}
+			.chip:hover {
+				color: var(--text);
+			}
+			.chip.active {
+				background: var(--accent);
+				border-color: var(--accent);
+				color: #06231f;
+				font-weight: 600;
+			}
+			input[type='search'] {
 				background: var(--panel-2);
 				border: 1px solid var(--line);
 				color: var(--text);
 				border-radius: 8px;
 				padding: 8px 10px;
 				font-size: 13px;
-			}
-			input[type='search'] {
 				flex: 1;
-				min-width: 180px;
+				min-width: 200px;
 			}
 			table {
 				width: 100%;
@@ -177,15 +237,15 @@ const endpoint = '/api/space-health';
 			}
 			.tag.page {
 				background: rgba(9, 179, 175, 0.15);
-				color: var(--accent);
+				color: var(--page);
 			}
 			.tag.nested {
 				background: rgba(240, 160, 32, 0.15);
-				color: var(--warn);
+				color: var(--nested);
 			}
 			.tag.universal {
 				background: rgba(126, 140, 255, 0.18);
-				color: #9aa6ff;
+				color: var(--universal);
 			}
 			.tag.unclassified {
 				background: rgba(154, 161, 177, 0.15);
@@ -198,7 +258,7 @@ const endpoint = '/api/space-health';
 				border-radius: 50%;
 			}
 			.dot.yes {
-				background: #4caf7d;
+				background: var(--good);
 			}
 			.dot.no {
 				background: #3a3f4d;
@@ -207,39 +267,50 @@ const endpoint = '/api/space-health';
 				color: var(--bad);
 				font-weight: 600;
 			}
+			.rowcount {
+				color: var(--muted);
+				font-size: 12px;
+				margin-left: auto;
+			}
 		</style>
 	</head>
 	<body>
 		<h1>Storyblok space health</h1>
-		<div class="sub" id="subtitle">Loading component insights...</div>
-		<div class="state" id="state">Scanning space, this can take a moment...</div>
-		<div id="dashboard" style="display:none">
+		<div class="sub" id="subtitle">Loading...</div>
+		<div class="sourcebar">
+			<button id="btn-static">Static snapshot</button>
+			<button id="btn-live">Refresh live from Storyblok</button>
+		</div>
+		<div class="state" id="state">Loading component insights...</div>
+		<div id="dashboard" style="display: none">
 			<div class="cards" id="cards"></div>
 			<div class="grid2">
-				<div class="panel"><h2>Most used components</h2><div id="most"></div></div>
-				<div class="panel"><h2>Metadata coverage</h2><div id="coverage"></div></div>
+				<div class="panel">
+					<h2>Component types</h2>
+					<div class="chart">
+						<div id="pie-types"></div><div class="legend" id="legend-types"></div>
+					</div>
+				</div>
+				<div class="panel">
+					<h2>Usage</h2>
+					<div class="chart">
+						<div id="pie-usage"></div><div class="legend" id="legend-usage"></div>
+					</div>
+				</div>
 			</div>
 			<div class="panel">
-				<h2>All components</h2>
+				<h2>Components</h2>
+				<div class="controls" id="chips"></div>
 				<div class="controls">
 					<input type="search" id="search" placeholder="Filter by name..." />
-					<select id="filter">
-						<option value="all">All</option>
-						<option value="used">Used only</option>
-						<option value="unused">Unused only</option>
-						<option value="page">Page components</option>
-						<option value="nested">Nested components</option>
-						<option value="universal">Universal</option>
-						<option value="no-icon">Missing icon</option>
-						<option value="no-color">Missing color</option>
-						<option value="no-preview">Missing preview</option>
-					</select>
+					<span class="rowcount" id="rowcount"></span>
 				</div>
 				<table>
-					<thead
-						><tr>
+					<thead>
+						<tr>
 							<th data-sort="name">Component</th>
 							<th data-sort="classification">Type</th>
+							<th class="num" data-sort="pageSectionUsage">In page</th>
 							<th class="num" data-sort="totalUsage">Total</th>
 							<th class="num" data-sort="asRootUsage">As page</th>
 							<th class="num" data-sort="nestedUsage">Nested</th>
@@ -247,17 +318,41 @@ const endpoint = '/api/space-health';
 							<th>Icon</th>
 							<th>Color</th>
 							<th>Preview</th>
-						</tr></thead
-					>
+						</tr>
+					</thead>
 					<tbody id="rows"></tbody>
 				</table>
 			</div>
 		</div>
 
-		<script is:inline define:vars={{ endpoint }}>
+		<script is:inline define:vars={{ staticData, liveEndpoint }}>
 			let REPORT = null;
-			let sortKey = 'totalUsage';
+			let activeFilter = 'page-section';
+			let sortKey = 'pageSectionUsage';
 			let sortDir = -1;
+
+			const COLORS = {
+				page: '#09b3af',
+				nested: '#f0a020',
+				universal: '#7e8cff',
+				unclassified: '#6b7280',
+				used: '#4caf7d',
+				unused: '#e2526b',
+			};
+
+			const CHIPS = [
+				{ id: 'page-section', label: 'In page components' },
+				{ id: 'all', label: 'All' },
+				{ id: 'page', label: 'Page' },
+				{ id: 'nested', label: 'Nested' },
+				{ id: 'universal', label: 'Universal' },
+				{ id: 'unclassified', label: 'Unclassified' },
+				{ id: 'used', label: 'Used' },
+				{ id: 'unused', label: 'Unused' },
+				{ id: 'no-icon', label: 'Missing icon' },
+				{ id: 'no-color', label: 'Missing color' },
+				{ id: 'no-preview', label: 'Missing preview' },
+			];
 
 			const escapeHtml = value =>
 				String(value).replace(
@@ -265,22 +360,19 @@ const endpoint = '/api/space-health';
 					ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]
 				);
 
-			function dot(on) {
-				return '<span class="dot ' + (on ? 'yes' : 'no') + '"></span>';
-			}
-
-			function passesFilter(component, mode) {
+			function predicate(component, mode) {
 				switch (mode) {
+					case 'page-section':
+						return component.pageSectionUsage > 0;
+					case 'page':
+					case 'nested':
+					case 'universal':
+					case 'unclassified':
+						return component.classification === mode;
 					case 'used':
 						return component.totalUsage > 0;
 					case 'unused':
 						return component.totalUsage === 0;
-					case 'page':
-						return component.classification === 'page';
-					case 'nested':
-						return component.classification === 'nested';
-					case 'universal':
-						return component.classification === 'universal';
 					case 'no-icon':
 						return !component.hasIcon;
 					case 'no-color':
@@ -292,17 +384,165 @@ const endpoint = '/api/space-health';
 				}
 			}
 
+			function setFilter(mode) {
+				activeFilter = mode;
+				renderChips();
+				renderLegendActive();
+				renderTable();
+			}
+
+			function dot(on) {
+				return '<span class="dot ' + (on ? 'yes' : 'no') + '"></span>';
+			}
+
+			function renderChips() {
+				document.getElementById('chips').innerHTML = CHIPS.map(
+					chip =>
+						'<span class="chip ' +
+						(activeFilter === chip.id ? 'active' : '') +
+						'" data-filter="' +
+						chip.id +
+						'">' +
+						chip.label +
+						'</span>'
+				).join('');
+				document.querySelectorAll('.chip').forEach(chip => {
+					chip.addEventListener('click', () =>
+						setFilter(chip.getAttribute('data-filter'))
+					);
+				});
+			}
+
+			function arcPath(cx, cy, radius, startAngle, endAngle) {
+				const toXy = angle => [
+					cx + radius * Math.cos(angle),
+					cy + radius * Math.sin(angle),
+				];
+				const [x1, y1] = toXy(startAngle);
+				const [x2, y2] = toXy(endAngle);
+				const large = endAngle - startAngle > Math.PI ? 1 : 0;
+				return (
+					'M ' +
+					cx +
+					' ' +
+					cy +
+					' L ' +
+					x1 +
+					' ' +
+					y1 +
+					' A ' +
+					radius +
+					' ' +
+					radius +
+					' 0 ' +
+					large +
+					' 1 ' +
+					x2 +
+					' ' +
+					y2 +
+					' Z'
+				);
+			}
+
+			function renderPie(containerId, legendId, segments) {
+				const total = segments.reduce((sum, seg) => sum + seg.value, 0) || 1;
+				const size = 150;
+				const cx = size / 2;
+				const cy = size / 2;
+				const radius = size / 2 - 2;
+				let angle = -Math.PI / 2;
+				const paths = segments
+					.filter(seg => seg.value > 0)
+					.map(seg => {
+						const start = angle;
+						const end = angle + (seg.value / total) * Math.PI * 2;
+						angle = end;
+						return (
+							'<path class="slice" data-filter="' +
+							seg.filter +
+							'" d="' +
+							arcPath(cx, cy, radius, start, end) +
+							'" fill="' +
+							seg.color +
+							'"><title>' +
+							seg.label +
+							': ' +
+							seg.value +
+							'</title></path>'
+						);
+					})
+					.join('');
+				document.getElementById(containerId).innerHTML =
+					'<svg width="' +
+					size +
+					'" height="' +
+					size +
+					'" viewBox="0 0 ' +
+					size +
+					' ' +
+					size +
+					'">' +
+					paths +
+					'<circle cx="' +
+					cx +
+					'" cy="' +
+					cy +
+					'" r="' +
+					radius * 0.55 +
+					'" fill="#171a22"></circle>' +
+					'<text x="' +
+					cx +
+					'" y="' +
+					(cy + 5) +
+					'" text-anchor="middle" fill="#e6e8ee" font-size="20" font-weight="700">' +
+					total +
+					'</text></svg>';
+
+				document.getElementById(legendId).innerHTML = segments
+					.map(
+						seg =>
+							'<div class="item" data-filter="' +
+							seg.filter +
+							'"><span class="swatch" style="background:' +
+							seg.color +
+							'"></span>' +
+							seg.label +
+							'<span class="count">' +
+							seg.value +
+							'</span></div>'
+					)
+					.join('');
+
+				document
+					.querySelectorAll('#' + containerId + ' .slice, #' + legendId + ' .item')
+					.forEach(el => {
+						el.addEventListener('click', () =>
+							setFilter(el.getAttribute('data-filter'))
+						);
+					});
+			}
+
+			function renderLegendActive() {
+				document.querySelectorAll('.legend .item').forEach(item => {
+					item.classList.toggle(
+						'active',
+						item.getAttribute('data-filter') === activeFilter
+					);
+				});
+			}
+
 			function renderTable() {
 				const term = document.getElementById('search').value.toLowerCase();
-				const mode = document.getElementById('filter').value;
 				const rows = REPORT.components
-					.filter(c => c.name.toLowerCase().includes(term) && passesFilter(c, mode))
+					.filter(c => c.name.toLowerCase().includes(term) && predicate(c, activeFilter))
 					.sort((a, b) => {
 						const av = a[sortKey];
 						const bv = b[sortKey];
 						if (typeof av === 'string') return av.localeCompare(bv) * sortDir;
 						return (av - bv) * sortDir;
 					});
+				document.getElementById('rowcount').textContent =
+					rows.length + ' of ' + REPORT.components.length + ' components';
 				document.getElementById('rows').innerHTML = rows
 					.map(
 						c =>
@@ -315,6 +555,9 @@ const endpoint = '/api/space-health';
 							'">' +
 							c.classification +
 							'</span></td>' +
+							'<td class="num">' +
+							c.pageSectionUsage +
+							'</td>' +
 							'<td class="num ' +
 							(c.totalUsage === 0 ? 'zero' : '') +
 							'">' +
@@ -343,37 +586,24 @@ const endpoint = '/api/space-health';
 					.join('');
 			}
 
-			function coverageBar(label, value, total) {
-				const pct = total ? Math.round((value / total) * 100) : 0;
-				return (
-					'<div class="bar-row"><span class="name">' +
-					label +
-					'</span><span class="bar-track"><span class="bar-fill" style="width:' +
-					pct +
-					'%"></span></span><span class="val">' +
-					pct +
-					'%</span></div>'
-				);
-			}
-
-			function renderDashboard() {
+			function render() {
 				const s = REPORT.summary;
 				document.getElementById('subtitle').textContent =
 					'Space ' +
 					REPORT.spaceId +
 					' · ' +
 					REPORT.storiesAnalysed +
-					' stories analysed (' +
-					REPORT.contentVersion +
-					')';
+					' stories · ' +
+					REPORT.contentVersion;
 
 				const cards = [
 					{ num: s.totalComponents, lbl: 'Components' },
-					{ num: s.usedComponents, lbl: 'Used' },
-					{ num: s.unusedComponents, lbl: 'Unused' },
+					{ num: s.pageSectionComponents, lbl: 'In page array' },
 					{ num: s.pageComponents, lbl: 'Page' },
 					{ num: s.nestedComponents, lbl: 'Nested' },
 					{ num: s.universalComponents, lbl: 'Universal' },
+					{ num: s.usedComponents, lbl: 'Used' },
+					{ num: s.unusedComponents, lbl: 'Unused' },
 					{ num: s.withIcon, lbl: 'With icon' },
 					{ num: s.withColor, lbl: 'With color' },
 					{ num: s.withPreview, lbl: 'With preview' },
@@ -389,26 +619,39 @@ const endpoint = '/api/space-health';
 					)
 					.join('');
 
-				const topUsed = REPORT.components.filter(c => c.totalUsage > 0).slice(0, 15);
-				const maxUsage = topUsed.length ? topUsed[0].totalUsage : 1;
-				document.getElementById('most').innerHTML = topUsed
-					.map(
-						c =>
-							'<div class="bar-row"><span class="name">' +
-							escapeHtml(c.name) +
-							'</span><span class="bar-track"><span class="bar-fill" style="width:' +
-							(c.totalUsage / maxUsage) * 100 +
-							'%"></span></span><span class="val">' +
-							c.totalUsage +
-							'</span></div>'
-					)
-					.join('');
+				renderPie('pie-types', 'legend-types', [
+					{ label: 'Page', value: s.pageComponents, color: COLORS.page, filter: 'page' },
+					{
+						label: 'Nested',
+						value: s.nestedComponents,
+						color: COLORS.nested,
+						filter: 'nested',
+					},
+					{
+						label: 'Universal',
+						value: s.universalComponents,
+						color: COLORS.universal,
+						filter: 'universal',
+					},
+					{
+						label: 'Unclassified',
+						value: s.unclassifiedComponents,
+						color: COLORS.unclassified,
+						filter: 'unclassified',
+					},
+				]);
+				renderPie('pie-usage', 'legend-usage', [
+					{ label: 'Used', value: s.usedComponents, color: COLORS.used, filter: 'used' },
+					{
+						label: 'Unused',
+						value: s.unusedComponents,
+						color: COLORS.unused,
+						filter: 'unused',
+					},
+				]);
 
-				document.getElementById('coverage').innerHTML =
-					coverageBar('Has icon', s.withIcon, s.totalComponents) +
-					coverageBar('Has color', s.withColor, s.totalComponents) +
-					coverageBar('Has preview', s.withPreview, s.totalComponents) +
-					coverageBar('Used in content', s.usedComponents, s.totalComponents);
+				renderChips();
+				renderLegendActive();
 
 				document.querySelectorAll('th[data-sort]').forEach(th => {
 					th.addEventListener('click', () => {
@@ -422,31 +665,40 @@ const endpoint = '/api/space-health';
 					});
 				});
 				document.getElementById('search').addEventListener('input', renderTable);
-				document.getElementById('filter').addEventListener('change', renderTable);
 
 				document.getElementById('state').style.display = 'none';
 				document.getElementById('dashboard').style.display = 'block';
 				renderTable();
 			}
 
-			async function load() {
+			async function load(source, label) {
+				const state = document.getElementById('state');
+				document.getElementById('dashboard').style.display = 'none';
+				state.className = 'state';
+				state.style.display = 'block';
+				state.textContent = 'Loading ' + label + '...';
 				try {
-					const response = await fetch(endpoint);
+					const response = await fetch(source);
 					const body = await response.json();
-					if (!response.ok) {
+					if (!response.ok)
 						throw new Error(body.error || 'Request failed (' + response.status + ')');
-					}
 					REPORT = body;
-					renderDashboard();
+					render();
 				} catch (error) {
-					const state = document.getElementById('state');
 					state.className = 'state error';
-					state.textContent = 'Failed to load space health: ' + error.message;
+					state.textContent = 'Failed to load ' + label + ': ' + error.message;
 					document.getElementById('subtitle').textContent = '';
 				}
 			}
 
-			load();
+			document
+				.getElementById('btn-static')
+				.addEventListener('click', () => load(staticData, 'static snapshot'));
+			document
+				.getElementById('btn-live')
+				.addEventListener('click', () => load(liveEndpoint, 'live data'));
+
+			load(staticData, 'static snapshot');
 		</script>
 	</body>
 </html>
