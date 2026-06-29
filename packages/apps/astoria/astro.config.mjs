@@ -17,6 +17,9 @@ export default defineConfig({
 	adapter: node({ mode: 'standalone' }),
 	trailingSlash: 'ignore',
 
+	//* Disable image optimisation so the native `sharp` dependency is not needed.
+	image: { service: { entrypoint: 'astro/assets/services/noop' } },
+
 	env: {
 		schema: {
 			PUBLIC_STORYBLOK_ACCESS_TOKEN: envField.string({ context: 'server', access: 'public' }),
