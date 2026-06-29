@@ -1,0 +1,87 @@
+/* stylelint-disable scss/at-rule-no-unknown */
+@layer base {
+	:root {
+		--gutter: 24px;
+		--outer-gutter: 24px;
+		--header-height: 64px;
+		--viewport: calc(100dvh - var(--header-height));
+		--edge: calc(50% - 50vw);
+		--brand-white: #ffffff;
+		--brand-black: #000000;
+		--light-white: #e5e5e5;
+		--grey-60: #666;
+	}
+
+	@media screen and (min-width: theme(screens[tablet])) {
+		:root {
+			--gutter: 40px;
+			--outer-gutter: 40px;
+		}
+	}
+
+	@media screen and (min-width: theme(screens[desktop])) {
+		:root {
+			--header-height: 80px;
+		}
+	}
+
+	@media screen and (min-width: theme(screens[wide])) {
+		:root {
+			--gutter: 40px;
+			--outer-gutter: 80px;
+		}
+	}
+
+	@media screen and (min-width: theme(screens[xl])) {
+		:root {
+			--gutter: 80px;
+			--outer-gutter: calc((100vw - 1440px) / 2);
+		}
+	}
+
+	* {
+		font-variant-ligatures: none;
+	}
+
+	*[id] {
+		scroll-margin-top: var(--gutter);
+	}
+
+	html {
+		font-size: 16px;
+		-webkit-font-smoothing: antialiased;
+		scroll-behavior: smooth;
+	}
+
+	/* Font css vars are defined on the main element */
+	main {
+		@apply body1;
+
+		fill: var(--brand-black);
+
+		--backgroundColor: var(--brand-white);
+		--coloredFontColor: var(--grey-60);
+		--subtleBorderColor: var(--light-white);
+
+		background-color: var(--brand-white);
+		margin: 0;
+		-webkit-tap-highlight-color: transparent;
+	}
+
+	.tt-block {
+		@apply relative mx-outer-gutter xl:w-1440;
+	}
+
+	.tt-grid {
+		@apply tt-block grid grid-cols-4 gap-x-gutter desktop:grid-cols-8;
+	}
+
+	body:has(details[data-subcomponent-name='AudienceSwitch'][open]) {
+		/** Lock body scrolling when AudienceSwitch is open and hide sticky ctas on product pages. **/
+		overflow: hidden;
+
+		[data-sticky-product-nav] {
+			display: none;
+		}
+	}
+}

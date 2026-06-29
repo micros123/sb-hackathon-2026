@@ -1,0 +1,74 @@
+@layer base {
+	/** The following classes are NOW INSIDE the @layer components directive,
+	** They should always be included, which happens with the <ForceTypography/> Atom for now.
+	** Items in a layer will otherwise be stripped when not in the codebase, but
+	**	typography is dynamic, coming from the CMS. */
+
+	.body1 {
+		@apply font-proxima text-body1 text-grey60;
+	}
+
+	.body2 {
+		@apply font-proxima text-body2 text-grey60;
+	}
+
+	.bodydisplay1 {
+		@apply font-proxima text-bodydisplay1-sm text-grey60 tablet:text-bodydisplay1-md wide:text-bodydisplay1-lg;
+	}
+
+	.bodydisplay2 {
+		@apply font-proxima text-bodydisplay2-sm text-grey60 tablet:text-bodydisplay2-md wide:text-bodydisplay2-lg;
+	}
+
+	.bodyintro1 {
+		@apply font-proxima text-bodyintro1-sm text-grey60 tablet:text-bodyintro1-md wide:text-bodyintro1-lg;
+	}
+
+	.bodyintro2 {
+		@apply font-proxima text-bodyintro2-sm text-grey60 tablet:text-bodyintro2-md wide:text-bodyintro2-lg;
+	}
+
+	.bodyfootnote {
+		@apply font-proxima text-bodyfootnote text-grey60;
+	}
+
+	.display1 {
+		@apply font-gilroy text-display1-sm text-black tablet:text-display1-md wide:text-display1-lg;
+	}
+
+	.display2 {
+		@apply font-gilroy text-display2-sm text-black tablet:text-display2-md wide:text-display2-lg;
+	}
+
+	.display3 {
+		@apply font-gilroy text-display3-sm text-black tablet:text-display3-md wide:text-display3-lg;
+	}
+
+	.display4 {
+		@apply font-gilroy text-display4-sm text-black tablet:text-display4-md wide:text-display4-lg;
+	}
+
+	.headline1 {
+		@apply font-gilroy text-headline1-sm text-black tablet:text-headline1-md wide:text-headline1-lg;
+	}
+
+	.headline2 {
+		@apply font-gilroy text-headline2-sm text-black tablet:text-headline2-md wide:text-headline2-lg;
+	}
+
+	.headline3 {
+		@apply font-gilroy text-headline3-sm text-black wide:text-headline3-lg;
+	}
+
+	.subheadline1 {
+		@apply font-gilroy text-subheadline1 text-black;
+	}
+
+	.subheadline2 {
+		@apply font-gilroy text-subheadline2 uppercase text-black;
+	}
+
+	.footnoteheadline {
+		@apply font-gilroy_semibold text-footnoteheadline text-black;
+	}
+}

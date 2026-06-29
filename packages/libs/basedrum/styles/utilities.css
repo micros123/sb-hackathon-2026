@@ -1,0 +1,34 @@
+/* stylelint-disable max-line-length */
+@layer utilities {
+	.scale-input-label {
+		@apply -translate-y-12 scale-85 opacity-25;
+	}
+
+	.list-item-checkmark {
+		display: flex;
+		align-items: center;
+		position: relative;
+	}
+
+	.list-item-checkmark::before {
+		margin-right: 16px;
+		content: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTMiIGhlaWdodD0iMTAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgY2xhc3M9ImNvbXBhcmlzb24tY2FyZHMtY2VsbC1pdGVtX19jaGVja21hcmsiPjxwYXRoIGQ9Ik00LjMyIDcuNCAxLjMgNC4zNiAwIDUuNjcgNC4zMiAxMCAxMyAxLjMgMTEuNyAweiIgZmlsbC1ydWxlPSJldmVub2RkIiBmaWxsPSIjMDA4ZDhkIi8+PC9zdmc+');
+	}
+
+	/* applying css filters to switch from black to our brand red #df1b12  (used for svg images) */
+	.filter-black-to-red {
+		filter: brightness(0) saturate(100%) invert(17%) sepia(62%) saturate(4558%)
+			hue-rotate(352deg) brightness(97%) contrast(102%);
+	}
+
+	/* Hide scrollbar for IE, Edge and Firefox */
+	.scrollbar-hidden {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	/* Hide scrollbar for Chrome and Safari and Opera */
+	.scrollbar-hidden::-webkit-scrollbar {
+		display: none;
+	}
+}
