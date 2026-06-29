@@ -27,7 +27,7 @@ const { blok } = Astro.props as Props;
 const cards = blok.cards ?? [];
 ---
 
-<section class="tt-block py-40 desktop:py-56" {...editable(blok)}>
+<section class="tt-block py-48 desktop:py-80" {...editable(blok)}>
 	<div class="flex flex-col items-center gap-24 text-center">
 		<RichText text={blok.tagline} class="display3 max-w-4xl" />
 

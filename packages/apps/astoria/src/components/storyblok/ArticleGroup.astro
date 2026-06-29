@@ -26,7 +26,7 @@ const isIcon = blok.imageType === 'icon';
 const visualClasses = isIcon ? 'h-48 w-48 object-contain' : 'h-auto w-full rounded-10';
 ---
 
-<section class="tt-block py-40 desktop:py-56" {...editable(blok)}>
+<section class="tt-block py-48 desktop:py-80" {...editable(blok)}>
 	<div class="mb-32 flex max-w-3xl flex-col gap-12">
 		<RichText text={blok.title} class="headline2" />
 		<RichText text={blok.body} class="body1" />

@@ -1,0 +1,80 @@
+---
+import Visual from 'components/shared/Visual.astro';
+import Ctas from 'components/shared/Ctas.astro';
+import { assetUrl, editable, labelForStory, type Asset, type SbBlok } from 'utils/storyblok';
+
+type ResolvedProduct = { name?: string; full_slug?: string; content?: Record<string, unknown> };
+
+type CardItem = SbBlok & {
+	product?: ResolvedProduct | string;
+	ctas?: SbBlok[];
+	voucher?: string;
+	isDealExpired?: boolean;
+};
+
+type Props = { blok: SbBlok & { cards?: CardItem[] } };
+
+const { blok } = Astro.props as Props;
+const cards = blok.cards ?? [];
+
+//* The product relation resolves to a story; surface its name and the first
+//* image found in its content so the card looks like a real product tile.
+const firstAsset = (content?: Record<string, unknown>): Asset | undefined => {
+	for (const value of Object.values(content ?? {})) {
+		if (value && typeof value === 'object' && typeof (value as Asset).filename === 'string') {
+			return value as Asset;
+		}
+	}
+
+	return undefined;
+};
+
+const productOf = (card: CardItem): ResolvedProduct | undefined =>
+	card.product && typeof card.product === 'object' ? card.product : undefined;
+---
+
+<section class="tt-block py-32 desktop:py-48" {...editable(blok)}>
+	<div class="grid grid-cols-1 gap-24 tablet:grid-cols-2 desktop:grid-cols-4">
+		{
+			cards.map(card => {
+				const product = productOf(card);
+				const title = product
+					? labelForStory(product.name ?? '', product.full_slug ?? '')
+					: 'Product';
+				const visual = firstAsset(product?.content);
+				return (
+					<div
+						class:list={[
+							'flex flex-col overflow-hidden rounded-20 border border-grey10 bg-white',
+							card.isDealExpired && 'opacity-50',
+						]}
+						{...editable(card)}
+					>
+						<div class="flex aspect-square items-center justify-center bg-grey5">
+							{assetUrl(visual) ? (
+								<Visual
+									visual={visual}
+									alt={title}
+									class="h-full w-full object-contain p-24"
+								/>
+							) : (
+								<span class="font-gilroy text-headline3-sm text-grey40">
+									TomTom
+								</span>
+							)}
+						</div>
+						<div class="flex flex-1 flex-col gap-8 p-24">
+							{card.voucher && (
+								<span class="w-fit rounded-4 bg-red px-8 py-4 font-proxima_bold text-body2 text-white">
+									{card.voucher}
+								</span>
+							)}
+							<span class="font-gilroy text-headline3-sm text-black">{title}</span>
+							<Ctas ctas={card.ctas} class="mt-auto pt-8" />
+						</div>
+					</div>
+				);
+			})
+		}
+	</div>
+</section>

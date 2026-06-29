@@ -1,0 +1,50 @@
+---
+import RichText from 'components/shared/RichText.astro';
+import Visual from 'components/shared/Visual.astro';
+import Ctas from 'components/shared/Ctas.astro';
+import { editable, type Asset, type SbBlok } from 'utils/storyblok';
+
+type DoubleArticleItem = SbBlok & {
+	title?: unknown;
+	body?: unknown;
+	ctas?: SbBlok[];
+	desktopVisual?: Asset;
+	mobileVisual?: Asset;
+	backgroundColor?: { value?: string };
+};
+
+type Props = { blok: SbBlok & { articles?: DoubleArticleItem[] } };
+
+const { blok } = Astro.props as Props;
+const articles = blok.articles ?? [];
+
+const backgroundFor = (value?: string): string => (value && value !== 'transparent' ? value : '');
+---
+
+<section class="tt-block py-24 desktop:py-32" {...editable(blok)}>
+	<div class="grid grid-cols-1 gap-24 tablet:grid-cols-2">
+		{
+			articles.map(article => {
+				const background = backgroundFor(article.backgroundColor?.value);
+				return (
+					<div
+						class="flex flex-col overflow-hidden rounded-20 bg-grey5"
+						style={background ? `background-color:${background}` : undefined}
+						{...editable(article)}
+					>
+						<Visual
+							visual={article.desktopVisual}
+							visualMobile={article.mobileVisual}
+							class="aspect-video h-auto w-full object-cover"
+						/>
+						<div class="flex flex-1 flex-col gap-12 p-32">
+							<RichText text={article.title} class="headline2" />
+							<RichText text={article.body} class="body1" />
+							<Ctas ctas={article.ctas} class="mt-auto pt-8" />
+						</div>
+					</div>
+				);
+			})
+		}
+	</div>
+</section>

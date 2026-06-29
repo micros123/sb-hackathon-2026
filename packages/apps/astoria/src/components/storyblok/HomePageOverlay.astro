@@ -18,9 +18,9 @@ const { blok } = Astro.props as Props;
 const items = blok.items ?? [];
 ---
 
-<section class="bg-black" {...editable(blok)}>
+<section class="bg-white" {...editable(blok)}>
 	<div class="tt-block py-48 desktop:py-64">
-		<RichText text={blok.title} class="headline1 mb-32 text-center text-white" />
+		<RichText text={blok.title} class="headline1 mb-32 text-center" />
 
 		<div class="grid grid-cols-1 gap-16 tablet:grid-cols-2">
 			{

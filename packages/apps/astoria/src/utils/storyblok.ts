@@ -68,6 +68,7 @@ export const resolveStory = async (path: string): Promise<Story | undefined> => 
 	for (const candidate of candidates) {
 		const { story } = await storyblok.fetchStory<StoryContent>(candidate, {
 			resolve_links: 'url',
+			resolve_relations: ['CommercialCardGroupItem.product'],
 		});
 
 		if (story) {

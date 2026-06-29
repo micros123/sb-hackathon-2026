@@ -1,50 +1,34 @@
 ---
 import RichText from 'components/shared/RichText.astro';
 import Visual from 'components/shared/Visual.astro';
-import CtaButton from 'components/shared/CtaButton.astro';
-import { editable, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
-
-type Cta = SbBlok & { link?: Multilink; label?: string; title?: string; text?: string };
+import Ctas from 'components/shared/Ctas.astro';
+import { editable, type Asset, type SbBlok } from 'utils/storyblok';
 
 type Props = {
 	blok: SbBlok & {
 		title?: unknown;
 		subtitle?: unknown;
 		body?: unknown;
-		ctas?: Cta[];
+		ctas?: SbBlok[];
 		visual?: Asset;
 		visualMobile?: Asset;
 	};
 };
 
 const { blok } = Astro.props as Props;
-const ctas = blok.ctas ?? [];
 ---
 
-<section class="tt-block py-40 desktop:py-56" {...editable(blok)}>
+<section class="tt-block py-48 desktop:py-80" {...editable(blok)}>
 	<div class="mx-auto flex max-w-3xl flex-col items-center gap-16 text-center">
 		<RichText text={blok.subtitle} class="font-proxima_bold text-body1 uppercase text-red" />
 		<RichText text={blok.title} class="headline1" />
 		<RichText text={blok.body} class="body1" />
-
-		{
-			ctas.length > 0 && (
-				<div class="mt-8 flex flex-wrap justify-center gap-16">
-					{ctas.map((cta, index) => (
-						<CtaButton
-							link={cta.link}
-							label={cta.label || cta.title || cta.text}
-							variant={index === 0 ? 'primary' : 'secondary'}
-						/>
-					))}
-				</div>
-			)
-		}
+		<Ctas ctas={blok.ctas} class="mt-8 justify-center" />
 	</div>
 
 	<Visual
 		visual={blok.visual}
 		visualMobile={blok.visualMobile}
-		class="mx-auto mt-32 h-auto w-full max-w-5xl rounded-20"
+		class="mx-auto mt-40 h-auto w-full max-w-5xl rounded-10"
 	/>
 </section>

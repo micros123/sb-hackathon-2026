@@ -20,7 +20,7 @@ const { blok } = Astro.props as Props;
 const blocks = blok.blocks ?? [];
 ---
 
-<section class="tt-block py-40 desktop:py-56" {...editable(blok)}>
+<section class="tt-block py-48 desktop:py-80" {...editable(blok)}>
 	<div class="grid grid-cols-1 gap-16 desktop:grid-cols-3">
 		{
 			blocks.map(item => {
@@ -28,7 +28,7 @@ const blocks = blok.blocks ?? [];
 				return (
 					<a
 						href={publicHref(item.link)}
-						class="group relative flex min-h-[360px] flex-col justify-end overflow-hidden rounded-20 p-32 no-underline"
+						class="group relative flex min-h-[360px] flex-col items-center justify-center overflow-hidden rounded-20 p-32 text-center no-underline"
 						{...editable(item)}
 					>
 						<Visual
@@ -37,8 +37,9 @@ const blocks = blok.blocks ?? [];
 							alt={item.title}
 							class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
 						/>
-						<div class:list={['relative flex flex-col gap-8', textClass]}>
-							<span class:list={['headline3', textClass]}>{item.title}</span>
+						<div class="absolute inset-0 bg-black/35" />
+						<div class:list={['relative flex max-w-sm flex-col gap-8', textClass]}>
+							<span class:list={['headline2', textClass]}>{item.title}</span>
 							<span class:list={['body1', textClass]}>{item.text}</span>
 						</div>
 					</a>

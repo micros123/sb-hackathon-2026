@@ -1,0 +1,25 @@
+---
+import CtaButton from 'components/shared/CtaButton.astro';
+import type { Multilink, SbBlok } from 'utils/storyblok';
+
+//* A Storyblok Cta blok carries its link in `url` (not `link`) plus a `label`.
+type Cta = SbBlok & { url?: Multilink; label?: string };
+
+type Props = { ctas?: Cta[]; class?: string };
+
+const { ctas = [], class: className } = Astro.props as Props;
+---
+
+{
+	ctas.length > 0 && (
+		<div class:list={['flex flex-wrap gap-16', className]}>
+			{ctas.map((cta, index) => (
+				<CtaButton
+					link={cta.url}
+					label={cta.label}
+					variant={index === 0 ? 'primary' : 'secondary'}
+				/>
+			))}
+		</div>
+	)
+}

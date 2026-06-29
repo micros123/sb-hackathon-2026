@@ -13,7 +13,7 @@ const items = blok.newItems ?? blok.items ?? [];
 const justify = blok.alignment === 'left' ? 'justify-start' : 'justify-center';
 ---
 
-<section class="tt-block py-32" {...editable(blok)}>
+<section class="tt-block py-40 desktop:py-56" {...editable(blok)}>
 	<div class:list={['flex flex-wrap items-center gap-x-48 gap-y-24', justify]}>
 		{
 			items.map(item => (

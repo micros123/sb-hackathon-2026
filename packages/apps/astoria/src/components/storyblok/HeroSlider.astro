@@ -1,0 +1,56 @@
+---
+import RichText from 'components/shared/RichText.astro';
+import Visual from 'components/shared/Visual.astro';
+import Ctas from 'components/shared/Ctas.astro';
+import { editable, type Asset, type SbBlok } from 'utils/storyblok';
+
+type HeroItem = SbBlok & {
+	label?: string;
+	title?: unknown;
+	body?: unknown;
+	cta?: SbBlok[];
+	visual?: Asset;
+	mobileVisual?: Asset;
+	isContentRightAligned?: boolean;
+};
+
+type Props = {
+	blok: SbBlok & { sliderGroup?: HeroItem[]; isHeightShorter?: boolean };
+};
+
+const { blok } = Astro.props as Props;
+const slides = blok.sliderGroup ?? [];
+const heightClass = blok.isHeightShorter ? 'min-h-[440px]' : 'min-h-[560px] desktop:min-h-[640px]';
+---
+
+<section {...editable(blok)}>
+	{
+		slides.map(slide => {
+			const alignClass = slide.isContentRightAligned ? 'desktop:ml-auto' : '';
+			return (
+				<div class:list={['relative flex items-center overflow-hidden', heightClass]}>
+					<Visual
+						visual={slide.visual}
+						visualMobile={slide.mobileVisual}
+						alt=""
+						loading="eager"
+						class="absolute inset-0 h-full w-full object-cover"
+					/>
+					<div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+					<div class="tt-block relative w-full">
+						<div class:list={['flex max-w-xl flex-col gap-16 text-white', alignClass]}>
+							{slide.label && (
+								<span class="font-proxima_bold text-body2 uppercase tracking-wide text-white">
+									{slide.label}
+								</span>
+							)}
+							<RichText text={slide.title} class="display3 text-white" />
+							<RichText text={slide.body} class="bodyintro2 text-grey20" />
+							<Ctas ctas={slide.cta} class="mt-8" />
+						</div>
+					</div>
+				</div>
+			);
+		})
+	}
+</section>
