@@ -1,5 +1,5 @@
 ---
-import BasedrumRichText from 'basedrum/components/atoms/rich-text/RichText';
+import RichTextRenderer from 'components/shared/RichTextRenderer';
 import type { StoryblokRichtext } from '@drumkit/storyblok/types/storyblok.d';
 
 type Props = { text?: unknown; class?: string };
@@ -13,7 +13,7 @@ const isFilledString = typeof text === 'string' && text.trim().length > 0;
 {
 	isRichtext ? (
 		<div class={className}>
-			<BasedrumRichText text={text as StoryblokRichtext} />
+			<RichTextRenderer text={text as StoryblokRichtext} />
 		</div>
 	) : isFilledString ? (
 		<div class={className} set:text={text} />

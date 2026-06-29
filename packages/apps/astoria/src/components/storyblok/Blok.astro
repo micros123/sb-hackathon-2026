@@ -1,7 +1,7 @@
 ---
 import type { SbBlokData } from '@storyblok/astro';
 import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
-import RichText from 'basedrum/components/atoms/rich-text/RichText';
+import RichText from 'components/shared/RichText.astro';
 import { editable } from 'utils/storyblok';
 import { classifyBlok, type SbBlok } from './BlokUtils';
 
@@ -48,11 +48,7 @@ const withProtocol = (source: string): string =>
 			}
 
 			if (field.kind === 'richtext') {
-				return (
-					<div class="body1">
-						<RichText text={field.value} />
-					</div>
-				);
+				return <RichText text={field.value} class="body1" />;
 			}
 
 			if (field.kind === 'image') {
