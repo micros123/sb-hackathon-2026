@@ -40,9 +40,24 @@ const CANDIDATE_PREFIXES = ['b2b/', 'b2c/'];
 
 const cleanPath = (path: string): string => path.replace(/^\/+|\/+$/g, '');
 
+const hasAudiencePrefix = (slug: string): boolean => /^b2[bc](\/|$)/.test(slug);
+
+const candidatesFor = (clean: string): string[] => {
+	if (!clean) {
+		return ['b2b'];
+	}
+
+	//* A full slug (b2b/... or b2c/...) is used as-is so the Storyblok live preview
+	//* URL renders, while a stripped public path is tried under both folders.
+	if (hasAudiencePrefix(clean)) {
+		return [clean];
+	}
+
+	return CANDIDATE_PREFIXES.map(prefix => `${prefix}${clean}`);
+};
+
 export const resolveStory = async (path: string): Promise<Story | undefined> => {
-	const clean = cleanPath(path);
-	const candidates = clean ? CANDIDATE_PREFIXES.map(prefix => `${prefix}${clean}`) : ['b2b'];
+	const candidates = candidatesFor(cleanPath(path));
 	const storyblok = getStoryblok();
 
 	for (const candidate of candidates) {
