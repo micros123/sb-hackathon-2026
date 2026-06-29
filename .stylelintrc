@@ -1,0 +1,31 @@
+{
+  "extends": [
+    "stylelint-config-standard-scss"
+  ],
+  "rules": {
+    "at-rule-no-unknown": null,
+    "at-rule-empty-line-before": null,
+    "color-hex-length": null,
+    "no-descending-specificity": null,
+    "alpha-value-notation": null,
+    "color-function-notation": null,
+    "selector-class-pattern": null,
+    "property-no-vendor-prefix": null,
+    "custom-property-pattern": null,
+    "scss/at-mixin-pattern": null,
+    "scss/at-if-no-null": null,
+    "scss/double-slash-comment-whitespace-inside": null,
+    "scss/at-mixin-argumentless-call-parentheses": "always",
+    "scss/double-slash-comment-empty-line-before": null,
+    "scss/no-global-function-names": null,
+    "selector-pseudo-class-no-unknown": [true, {
+      "ignorePseudoClasses": ["export"]
+    }],
+    "scss/dollar-variable-pattern": [
+      "^[a-z0-9-]+$",
+      {
+        "severity": "warning"
+      }
+    ]
+  }
+}
