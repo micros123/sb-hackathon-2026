@@ -1,0 +1,20 @@
+{
+  "name": "@drumkit/storyblok",
+  "version": "9.0.0",
+  "description": "",
+  "inject-workspace-packages": true,
+  "keywords": [],
+  "license": "ISC",
+  "scripts": {
+    "generate-types": "storyblok components pull --space 178460 && storyblok types generate --space 178460 --type-suffix Props --custom-fields-parser ./storyblokCustomParser.js --compiler-options ./storyblokCompilerOptions.js && cp -r ./.storyblok/types/* ./types/storyblok-generated/",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@storyblok/react": "~5.4.20",
+    "storyblok-js-client": "~7.6.0"
+  },
+  "devDependencies": {
+    "storyblok": "~4.17.9",
+    "vitest": "~4.1.9"
+  }
+}
