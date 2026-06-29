@@ -1,0 +1,114 @@
+---
+import type { SbBlokData } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import RichText from 'basedrum/components/atoms/rich-text/RichText';
+import { classifyBlok, type SbBlok } from './BlokUtils';
+
+type Props = { blok: SbBlok };
+
+const { blok } = Astro.props as Props;
+const fields = classifyBlok(blok);
+const isInspecting = Astro.url.searchParams.has('inspect');
+
+const withProtocol = (source: string): string =>
+	source.startsWith('//') ? `https:${source}` : source;
+---
+
+<div class="astoria-blok tt-block flex flex-col gap-16 py-24" data-component={blok.component}>
+	{
+		isInspecting && (
+			<span class="self-start rounded-4 bg-grey10 px-8 py-4 font-proxima text-body2 text-grey60">
+				{blok.component}
+			</span>
+		)
+	}
+
+	{
+		fields.map(({ key, field }) => {
+			if (field.kind === 'heading') {
+				return <h2 class="headline2">{field.text}</h2>;
+			}
+
+			if (field.kind === 'body') {
+				return <p class="body1 max-w-2xl">{field.text}</p>;
+			}
+
+			if (field.kind === 'text') {
+				return (
+					<p class="body2 text-grey50">
+						<span class="font-proxima_bold text-grey60">{field.label}:</span>{' '}
+						{field.text}
+					</p>
+				);
+			}
+
+			if (field.kind === 'richtext') {
+				return (
+					<div class="body1">
+						<RichText text={field.value} />
+					</div>
+				);
+			}
+
+			if (field.kind === 'image') {
+				return (
+					<img
+						src={withProtocol(field.src)}
+						alt={field.alt}
+						loading="lazy"
+						class="h-auto w-full rounded-10"
+					/>
+				);
+			}
+
+			if (field.kind === 'video') {
+				return (
+					<video
+						src={withProtocol(field.src)}
+						controls
+						class="h-auto w-full rounded-10"
+					/>
+				);
+			}
+
+			if (field.kind === 'link') {
+				return (
+					<a
+						href={field.href}
+						class="inline-flex w-fit items-center rounded-40 bg-black px-24 py-12 font-proxima_bold text-body2 text-white no-underline transition-opacity hover:opacity-80"
+					>
+						{field.label}
+					</a>
+				);
+			}
+
+			if (field.kind === 'bloks') {
+				const isWide = field.value.length > 2;
+				return (
+					<div
+						class:list={[
+							'grid gap-24',
+							isWide
+								? 'tablet:grid-cols-2 desktop:grid-cols-3'
+								: 'tablet:grid-cols-2',
+						]}
+						data-field={key}
+					>
+						{field.value.map(child => (
+							<div
+								class:list={[
+									'astoria-nested',
+									isInspecting && 'rounded-10 border border-grey20 p-16',
+								]}
+							>
+								<StoryblokComponent blok={child as unknown as SbBlokData} />
+							</div>
+						))}
+					</div>
+				);
+			}
+
+			return null;
+		})
+	}
+</div>

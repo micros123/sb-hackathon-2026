@@ -1,0 +1,14 @@
+---
+import { storyblokEditable, type SbBlokData } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import type { SbBlok } from './BlokUtils';
+
+type Props = { blok: SbBlok & { components?: SbBlok[]; body?: SbBlok[] } };
+
+const { blok } = Astro.props as Props;
+const bloks = blok.components ?? blok.body ?? [];
+---
+
+<main {...storyblokEditable(blok as unknown as SbBlokData)}>
+	{bloks.map(child => <StoryblokComponent blok={child as unknown as SbBlokData} />)}
+</main>

@@ -1,0 +1,68 @@
+---
+import RichText from 'components/shared/RichText.astro';
+import Visual from 'components/shared/Visual.astro';
+import CtaButton from 'components/shared/CtaButton.astro';
+import { publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
+
+type CardItem = SbBlok & {
+	title?: unknown;
+	subtitle?: unknown;
+	text?: unknown;
+	visual?: Asset;
+	link?: Multilink;
+};
+
+type Props = {
+	blok: SbBlok & {
+		tagline?: unknown;
+		cards?: CardItem[];
+		primaryButtonLabel?: string;
+		primaryButtonLink?: Multilink;
+		secondaryButtonLabel?: string;
+		secondaryButtonLink?: Multilink;
+	};
+};
+
+const { blok } = Astro.props as Props;
+const cards = blok.cards ?? [];
+---
+
+<section class="tt-block py-40 desktop:py-56">
+	<div class="flex flex-col items-center gap-24 text-center">
+		<RichText text={blok.tagline} class="display3 max-w-4xl" />
+
+		<div class="flex flex-wrap justify-center gap-16">
+			<CtaButton
+				link={blok.primaryButtonLink}
+				label={blok.primaryButtonLabel}
+				variant="primary"
+			/>
+			<CtaButton
+				link={blok.secondaryButtonLink}
+				label={blok.secondaryButtonLabel}
+				variant="secondary"
+			/>
+		</div>
+	</div>
+
+	{
+		cards.length > 0 && (
+			<div class="mt-40 grid grid-cols-1 gap-24 tablet:grid-cols-3">
+				{cards.map(card => (
+					<a
+						href={publicHref(card.link)}
+						class="flex flex-col gap-12 rounded-20 border border-grey20 p-24 no-underline transition-shadow hover:shadow-lg"
+					>
+						<Visual visual={card.visual} class="h-auto w-full rounded-10" />
+						<RichText text={card.title} class="headline3" />
+						<RichText
+							text={card.subtitle}
+							class="font-proxima_bold text-body2 text-red"
+						/>
+						<RichText text={card.text} class="body2" />
+					</a>
+				))}
+			</div>
+		)
+	}
+</section>

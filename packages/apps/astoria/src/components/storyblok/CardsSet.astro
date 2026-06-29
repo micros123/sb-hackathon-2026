@@ -1,0 +1,47 @@
+---
+import RichText from 'components/shared/RichText.astro';
+import Visual from 'components/shared/Visual.astro';
+import { publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
+
+type CardItem = SbBlok & {
+	title?: unknown;
+	subtitle?: unknown;
+	visual?: Asset;
+	visualMobile?: Asset;
+	link?: Multilink;
+	buttonLabel?: string;
+};
+
+type Props = { blok: SbBlok & { cards?: CardItem[] } };
+
+const { blok } = Astro.props as Props;
+const cards = blok.cards ?? [];
+---
+
+<section class="tt-block py-40 desktop:py-56">
+	<div class="grid grid-cols-1 gap-24 tablet:grid-cols-2 desktop:grid-cols-3">
+		{
+			cards.map(card => (
+				<a
+					href={publicHref(card.link)}
+					class="group flex flex-col overflow-hidden rounded-20 border border-grey20 no-underline transition-shadow hover:shadow-lg"
+				>
+					<Visual
+						visual={card.visual}
+						visualMobile={card.visualMobile}
+						class="aspect-video h-auto w-full object-cover"
+					/>
+					<div class="flex flex-1 flex-col gap-8 p-24">
+						<RichText text={card.title} class="headline3" />
+						<RichText text={card.subtitle} class="body2" />
+						{card.buttonLabel && (
+							<span class="mt-auto pt-12 font-proxima_bold text-body2 text-red group-hover:underline">
+								{card.buttonLabel} →
+							</span>
+						)}
+					</div>
+				</a>
+			))
+		}
+	</div>
+</section>

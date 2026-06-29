@@ -1,0 +1,29 @@
+---
+import { assetUrl, type Asset } from 'utils/storyblok';
+
+type Props = {
+	visual?: Asset | null;
+	visualMobile?: Asset | null;
+	alt?: string;
+	class?: string;
+	loading?: 'lazy' | 'eager';
+};
+
+const { visual, visualMobile, alt, class: className, loading = 'lazy' } = Astro.props as Props;
+
+const desktopSrc = assetUrl(visual);
+const mobileSrc = assetUrl(visualMobile);
+const altText = alt ?? visual?.alt ?? '';
+---
+
+{
+	desktopSrc &&
+		(mobileSrc ? (
+			<picture>
+				<source media="(min-width: 768px)" srcset={desktopSrc} />
+				<img src={mobileSrc} alt={altText} loading={loading} class={className} />
+			</picture>
+		) : (
+			<img src={desktopSrc} alt={altText} loading={loading} class={className} />
+		))
+}

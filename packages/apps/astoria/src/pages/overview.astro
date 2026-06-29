@@ -1,0 +1,93 @@
+---
+import Layout from 'layouts/Layout.astro';
+import {
+	audienceOf,
+	audienceLabels,
+	getStoryblok,
+	labelForStory,
+	publicHref,
+	type Audience,
+} from 'utils/storyblok';
+
+type StorySummary = { full_slug: string; name: string };
+
+let stories: StorySummary[] = [];
+let loadError: string | null = null;
+
+try {
+	const { fetchStories } = getStoryblok();
+	const { stories: fetched } = await fetchStories<unknown>({
+		page: 'all',
+		excluding_fields: 'body,components,seo',
+	});
+	stories = (fetched as unknown as StorySummary[])
+		.slice()
+		.sort((first, second) => first.full_slug.localeCompare(second.full_slug));
+} catch (error) {
+	loadError =
+		error instanceof Error
+			? error.message
+			: 'Could not reach Storyblok. Is the access token set?';
+}
+
+const pages = stories
+	.filter(story => !!story.full_slug && !story.full_slug.includes('_components'))
+	.filter(story => audienceOf(story.full_slug) !== 'other');
+
+const groups: { audience: Audience; pages: StorySummary[] }[] = (['b2b', 'b2c'] as Audience[])
+	.map(audience => ({
+		audience,
+		pages: pages.filter(page => audienceOf(page.full_slug) === audience),
+	}))
+	.filter(group => group.pages.length > 0);
+---
+
+<Layout title="Content overview">
+	<main class="tt-block py-48">
+		<h1 class="display3">Content overview</h1>
+		<p class="bodyintro2 mt-16 max-w-2xl">
+			Every story in the hackathon space, grouped by namespace. The
+			<code class="font-proxima_bold text-red">b2b/</code> and
+			<code class="font-proxima_bold text-red">b2c/</code> prefixes are stripped from the public
+			URLs. Add <code class="font-proxima_bold text-red">?inspect</code> to any page to reveal component
+			boundaries.
+		</p>
+
+		{
+			loadError && (
+				<div class="mt-32 rounded-10 border border-red bg-white p-24">
+					<p class="body1 text-red">{loadError}</p>
+				</div>
+			)
+		}
+
+		{
+			groups.map(group => (
+				<section class="mt-48">
+					<h2 class="headline2 mb-24">
+						{audienceLabels[group.audience]}
+						<span class="font-proxima text-body2 text-grey50">
+							{' '}
+							({group.pages.length})
+						</span>
+					</h2>
+					<div class="grid grid-cols-1 gap-16 tablet:grid-cols-2 desktop:grid-cols-3">
+						{group.pages.map(page => (
+							<a
+								href={publicHref(page.full_slug)}
+								class="flex flex-col gap-8 rounded-10 border border-grey20 p-24 no-underline transition-shadow hover:shadow-lg"
+							>
+								<span class="font-proxima_bold text-body1 text-black">
+									{labelForStory(page.name, page.full_slug)}
+								</span>
+								<span class="font-proxima text-body2 text-grey50">
+									/{page.full_slug}
+								</span>
+							</a>
+						))}
+					</div>
+				</section>
+			))
+		}
+	</main>
+</Layout>

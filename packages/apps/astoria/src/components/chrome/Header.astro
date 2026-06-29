@@ -1,0 +1,57 @@
+---
+import type { Audience } from 'utils/storyblok';
+
+type Props = { audience?: Audience };
+
+const { audience } = Astro.props as Props;
+const isInspecting = Astro.url.searchParams.has('inspect');
+
+const audienceTabs: { key: Audience; label: string; href: string }[] = [
+	{ key: 'b2b', label: 'Business', href: '/' },
+	{ key: 'b2c', label: 'Consumer', href: '/navigation' },
+];
+---
+
+<header
+	class="sticky top-0 z-50 flex h-header-height items-center justify-between border-b border-grey20 bg-white px-outer-gutter"
+>
+	<a href="/" class="font-gilroy text-headline3-sm text-black no-underline">
+		Tom<span class="text-red">Tom</span>
+		<span class="ml-8 font-proxima text-body2 text-grey50">Astoria</span>
+	</a>
+
+	<nav class="flex items-center gap-8">
+		{
+			audienceTabs.map(tab => (
+				<a
+					href={tab.href}
+					class:list={[
+						'rounded-40 px-16 py-8 font-proxima_bold text-body2 no-underline transition-colors',
+						audience === tab.key
+							? 'bg-black text-white'
+							: 'text-grey60 hover:bg-grey10',
+					]}
+				>
+					{tab.label}
+				</a>
+			))
+		}
+
+		<a
+			href="/overview"
+			class="ml-8 rounded-40 px-16 py-8 font-proxima text-body2 text-grey60 no-underline transition-colors hover:bg-grey10"
+		>
+			Overview
+		</a>
+
+		<a
+			href={isInspecting ? Astro.url.pathname : `${Astro.url.pathname}?inspect`}
+			class:list={[
+				'ml-8 rounded-40 border border-grey20 px-16 py-8 font-proxima text-body2 no-underline transition-colors',
+				isInspecting ? 'border-red text-red' : 'text-grey50 hover:bg-grey10',
+			]}
+		>
+			Inspect
+		</a>
+	</nav>
+</header>

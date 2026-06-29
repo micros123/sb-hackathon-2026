@@ -1,0 +1,52 @@
+---
+import RichText from 'components/shared/RichText.astro';
+import Visual from 'components/shared/Visual.astro';
+import { publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
+
+type OverlayItem = SbBlok & {
+	key?: string;
+	title?: string;
+	body?: unknown;
+	link?: Multilink;
+	visual?: Asset;
+	visualMobile?: Asset;
+};
+
+type Props = { blok: SbBlok & { title?: unknown; items?: OverlayItem[] } };
+
+const { blok } = Astro.props as Props;
+const items = blok.items ?? [];
+---
+
+<section class="bg-black">
+	<div class="tt-block py-48 desktop:py-64">
+		<RichText text={blok.title} class="headline1 mb-32 text-center text-white" />
+
+		<div class="grid grid-cols-1 gap-16 tablet:grid-cols-2">
+			{
+				items.map(item => (
+					<a
+						href={publicHref(item.link)}
+						class="group relative flex min-h-[320px] flex-col justify-end overflow-hidden rounded-20 p-32 no-underline desktop:min-h-[440px]"
+					>
+						<Visual
+							visual={item.visual}
+							visualMobile={item.visualMobile}
+							alt={item.title}
+							loading="eager"
+							class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+						/>
+						<div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+						<div class="relative flex flex-col gap-8 text-white">
+							<span class="headline2 text-white">{item.title}</span>
+							<RichText text={item.body} class="body1 text-grey20" />
+							<span class="mt-8 font-proxima_bold text-body1 text-white group-hover:underline">
+								Learn more →
+							</span>
+						</div>
+					</a>
+				))
+			}
+		</div>
+	</div>
+</section>

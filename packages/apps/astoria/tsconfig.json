@@ -1,0 +1,13 @@
+{
+	"extends": "../../../tsconfig.shared",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"components/*": ["./src/components/*"],
+			"layouts/*": ["./src/layouts/*"],
+			"utils/*": ["./src/utils/*"],
+			"styles/*": ["./src/styles/*"]
+		}
+	},
+	"include": ["env.d.ts", "**/*.ts", "**/*.tsx", "**/*.astro", "tailwind.config.mjs"]
+}

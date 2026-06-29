@@ -1,0 +1,56 @@
+---
+import Visual from 'components/shared/Visual.astro';
+import CtaButton from 'components/shared/CtaButton.astro';
+import { publicHref, type Asset, type Multilink, type SbBlok } from 'utils/storyblok';
+
+type TripleItem = SbBlok & {
+	title?: string;
+	text?: string;
+	link?: Multilink;
+	textColor?: string;
+	desktopImage?: Asset;
+	mobileImage?: Asset;
+};
+
+type Props = {
+	blok: SbBlok & { blocks?: TripleItem[]; buttonLabel?: string; buttonLink?: Multilink };
+};
+
+const { blok } = Astro.props as Props;
+const blocks = blok.blocks ?? [];
+---
+
+<section class="tt-block py-40 desktop:py-56">
+	<div class="grid grid-cols-1 gap-16 desktop:grid-cols-3">
+		{
+			blocks.map(item => {
+				const textClass = item.textColor === 'white' ? 'text-white' : 'text-black';
+				return (
+					<a
+						href={publicHref(item.link)}
+						class="group relative flex min-h-[360px] flex-col justify-end overflow-hidden rounded-20 p-32 no-underline"
+					>
+						<Visual
+							visual={item.desktopImage}
+							visualMobile={item.mobileImage}
+							alt={item.title}
+							class="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+						/>
+						<div class:list={['relative flex flex-col gap-8', textClass]}>
+							<span class:list={['headline3', textClass]}>{item.title}</span>
+							<span class:list={['body1', textClass]}>{item.text}</span>
+						</div>
+					</a>
+				);
+			})
+		}
+	</div>
+
+	{
+		blok.buttonLabel && (
+			<div class="mt-32 flex justify-center">
+				<CtaButton link={blok.buttonLink} label={blok.buttonLabel} variant="secondary" />
+			</div>
+		)
+	}
+</section>

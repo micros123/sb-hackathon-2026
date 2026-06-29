@@ -1,0 +1,20 @@
+---
+import type { SbBlokData } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import Layout from 'layouts/Layout.astro';
+import { audienceOf, labelForStory, resolveStory } from 'utils/storyblok';
+
+const { slug = '' } = Astro.params;
+const story = await resolveStory(slug);
+
+if (!story) {
+	return new Response('Story not found', { status: 404 });
+}
+
+const title = labelForStory(story.name, story.full_slug);
+const audience = audienceOf(story.full_slug);
+---
+
+<Layout title={title} audience={audience}>
+	<StoryblokComponent blok={story.content as unknown as SbBlokData} />
+</Layout>

@@ -1,0 +1,36 @@
+---
+import { publicHref, type Multilink } from 'utils/storyblok';
+
+type Props = {
+	link?: Multilink | null;
+	label?: string;
+	variant?: 'primary' | 'secondary' | 'text';
+	class?: string;
+};
+
+const { link, label, variant = 'primary', class: className } = Astro.props as Props;
+
+const href = publicHref(link);
+const text = label?.trim() || link?.title?.trim();
+
+const variantClasses = {
+	primary: 'bg-black text-white hover:opacity-80',
+	secondary: 'border border-grey30 text-black hover:bg-grey10',
+	text: 'text-red hover:underline px-0',
+};
+---
+
+{
+	text && (
+		<a
+			href={href}
+			class:list={[
+				'inline-flex w-fit items-center rounded-40 px-24 py-12 font-proxima_bold text-body2 no-underline transition-colors',
+				variantClasses[variant],
+				className,
+			]}
+		>
+			{text}
+		</a>
+	)
+}

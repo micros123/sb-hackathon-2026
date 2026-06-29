@@ -1,0 +1,32 @@
+---
+const sections = [
+	{ title: 'For drivers', items: ['Maps', 'Navigation', 'Traffic', 'Speed cameras'] },
+	{
+		title: 'For business',
+		items: ['Orbis Maps', 'Navigation SDK', 'Traffic APIs', 'Automotive'],
+	},
+	{ title: 'Company', items: ['About us', 'Newsroom', 'Careers', 'Contact'] },
+];
+---
+
+<footer class="bg-black py-48 text-white">
+	<div class="tt-block grid grid-cols-2 gap-32 desktop:grid-cols-4">
+		<div class="col-span-2 desktop:col-span-1">
+			<span class="font-gilroy text-headline3-sm">Tom<span class="text-red">Tom</span></span>
+			<p class="mt-16 font-proxima text-body2 text-grey40">
+				Astoria renders Storyblok hackathon content with the TomTom design system.
+			</p>
+		</div>
+
+		{
+			sections.map(section => (
+				<div class="flex flex-col gap-8">
+					<span class="font-proxima_bold text-body2 text-grey30">{section.title}</span>
+					{section.items.map(item => (
+						<span class="font-proxima text-body2 text-grey40">{item}</span>
+					))}
+				</div>
+			))
+		}
+	</div>
+</footer>

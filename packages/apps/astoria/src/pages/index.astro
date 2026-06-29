@@ -1,0 +1,26 @@
+---
+import type { SbBlokData } from '@storyblok/astro';
+import StoryblokComponent from '@storyblok/astro/StoryblokComponent.astro';
+import Layout from 'layouts/Layout.astro';
+import { labelForStory, resolveStory } from 'utils/storyblok';
+
+const story = await resolveStory('');
+---
+
+{
+	story ? (
+		<Layout title={labelForStory(story.name, story.full_slug)} audience="b2b">
+			<StoryblokComponent blok={story.content as unknown as SbBlokData} />
+		</Layout>
+	) : (
+		<Layout title="Astoria">
+			<main class="tt-block py-48">
+				<h1 class="display3">Astoria</h1>
+				<p class="body1 mt-16 text-grey60">
+					Could not load the b2b home story. Check the Storyblok access token in
+					<code>environments/.env.development</code>, then restart the dev server.
+				</p>
+			</main>
+		</Layout>
+	)
+}
