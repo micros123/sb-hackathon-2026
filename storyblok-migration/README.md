@@ -50,10 +50,22 @@ storyblok_tomtom    datasources pull -s "$TOMTOM_SPACE_ID" --sf
 storyblok_hackathon datasources push -s "$HACKATHON_SPACE_ID" --from "$TOMTOM_SPACE_ID" --sf
 ```
 
-## Stories + used assets (not yet built)
+## Copy stories
 
-Copying stories and only their referenced assets needs a Management API script:
-read stories from the source, download the assets they reference, re-upload to
-the target, rewrite the asset URLs, then create the stories in the target as
-**drafts** (never auto-published). Ask Claude to build `migrate-stories.ts` when
-the schema is in place.
+Copies all stories under `b2b/`, `b2c/`, and `_components/` from the source
+space into the target as **drafts** (never published). Excludes newsroom/,
+legal/, press-releases/, and careers/ subpaths. Idempotent: safe to re-run
+after partial failures.
+
+```sh
+cd storyblok-migration
+npx tsx migrate-stories.ts
+```
+
+Requires `tsx` (Node.js TypeScript runner). Install once: `npm install -g tsx`.
+
+## Assets (not yet built)
+
+Assets referenced by story content keep their original TomTom CDN URLs for now.
+A separate asset migration script would need to download, re-upload, and rewrite
+the URLs inside story content.
