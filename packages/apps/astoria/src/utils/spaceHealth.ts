@@ -2,13 +2,22 @@ import StoryblokClient from 'storyblok-js-client';
 
 export type ComponentClassification = 'page' | 'nested' | 'universal' | 'unclassified';
 
+export type ComponentRole = 'page' | 'section' | 'subcomponent' | 'unused';
+
+export type StylingCompleteness = 'full' | 'partial' | 'none';
+
 export type ComponentRow = {
 	name: string;
 	displayName: string;
 	classification: ComponentClassification;
+	role: ComponentRole;
+	styling: StylingCompleteness;
+	icon: string | null;
+	color: string | null;
 	hasIcon: boolean;
 	hasColor: boolean;
 	hasPreview: boolean;
+	hasPreset: boolean;
 	totalUsage: number;
 	asRootUsage: number;
 	nestedUsage: number;
@@ -30,9 +39,17 @@ export type SpaceHealthReport = {
 		universalComponents: number;
 		unclassifiedComponents: number;
 		pageSectionComponents: number;
+		rolePage: number;
+		roleSection: number;
+		roleSubcomponent: number;
+		roleUnused: number;
+		stylingFull: number;
+		stylingPartial: number;
+		stylingNone: number;
 		withIcon: number;
 		withColor: number;
 		withPreview: number;
+		withPreset: number;
 	};
 	components: ComponentRow[];
 };
@@ -48,6 +65,7 @@ type ComponentSchema = {
 	preview_field: string | null;
 	preview_tmpl: string | null;
 	content_type_asset_preview: string | null;
+	all_presets: unknown[] | null;
 };
 
 type Story = {
@@ -184,21 +202,48 @@ export function buildReport(
 	const components: ComponentRow[] = schemas
 		.map(schema => {
 			const counts = usage.get(schema.name);
+			const totalUsage = counts?.total ?? 0;
+			const asRootUsage = counts?.asRoot ?? 0;
+			const pageSectionUsage = counts?.pageSection ?? 0;
+
+			const role: ComponentRole =
+				totalUsage === 0
+					? 'unused'
+					: asRootUsage > 0
+						? 'page'
+						: pageSectionUsage > 0
+							? 'section'
+							: 'subcomponent';
+
+			const componentHasIcon = Boolean(schema.icon);
+			const componentHasColor = Boolean(schema.color);
+			const componentHasPreview = hasPreview(schema);
+			const styledCount = [componentHasIcon, componentHasColor, componentHasPreview].filter(
+				Boolean
+			).length;
+			const styling: StylingCompleteness =
+				styledCount === 3 ? 'full' : styledCount > 0 ? 'partial' : 'none';
+
 			return {
 				name: schema.name,
 				displayName: schema.display_name ?? schema.name,
 				classification: classify(schema),
-				hasIcon: Boolean(schema.icon),
-				hasColor: Boolean(schema.color),
-				hasPreview: hasPreview(schema),
-				totalUsage: counts?.total ?? 0,
-				asRootUsage: counts?.asRoot ?? 0,
+				role,
+				styling,
+				icon: schema.icon || null,
+				color: schema.color || null,
+				hasIcon: componentHasIcon,
+				hasColor: componentHasColor,
+				hasPreview: componentHasPreview,
+				hasPreset: (schema.all_presets?.length ?? 0) > 0,
+				totalUsage,
+				asRootUsage,
 				nestedUsage: counts?.nested ?? 0,
-				pageSectionUsage: counts?.pageSection ?? 0,
+				pageSectionUsage,
 				storyCount: counts?.stories.size ?? 0,
 			};
 		})
-		.sort((first, second) => second.totalUsage - first.totalUsage);
+		.sort((first, second) => second.pageSectionUsage - first.pageSectionUsage);
 
 	const summary = {
 		totalComponents: components.length,
@@ -210,9 +255,17 @@ export function buildReport(
 		unclassifiedComponents: components.filter(row => row.classification === 'unclassified')
 			.length,
 		pageSectionComponents: components.filter(row => row.pageSectionUsage > 0).length,
+		rolePage: components.filter(row => row.role === 'page').length,
+		roleSection: components.filter(row => row.role === 'section').length,
+		roleSubcomponent: components.filter(row => row.role === 'subcomponent').length,
+		roleUnused: components.filter(row => row.role === 'unused').length,
+		stylingFull: components.filter(row => row.styling === 'full').length,
+		stylingPartial: components.filter(row => row.styling === 'partial').length,
+		stylingNone: components.filter(row => row.styling === 'none').length,
 		withIcon: components.filter(row => row.hasIcon).length,
 		withColor: components.filter(row => row.hasColor).length,
 		withPreview: components.filter(row => row.hasPreview).length,
+		withPreset: components.filter(row => row.hasPreset).length,
 	};
 
 	return { ...context, summary, components };

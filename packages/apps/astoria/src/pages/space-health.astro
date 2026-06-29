@@ -1,6 +1,58 @@
 ---
 const staticData = '/space-health.json';
 const liveEndpoint = '/api/space-health';
+
+// Storyblok block-* icon names mapped to Lucide (ISC-licensed) vector equivalents,
+// rendered as the inner markup of a 24x24 stroke icon.
+const iconSvg: Record<string, string> = {
+	'block-cart':
+		'<circle cx="8" cy="21" r="1" /> <circle cx="19" cy="21" r="1" /> <path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12" />',
+	'block-image':
+		'<rect width="18" height="18" x="3" y="3" rx="2" ry="2" /> <circle cx="9" cy="9" r="2" /> <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />',
+	'block-email':
+		'<path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7" /> <rect x="2" y="4" width="20" height="16" rx="2" />',
+	'block-doc':
+		'<path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" /> <path d="M14 2v5a1 1 0 0 0 1 1h5" /> <path d="M10 9H8" /> <path d="M16 13H8" /> <path d="M16 17H8" />',
+	'block-comment':
+		'<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />',
+	'message-square':
+		'<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z" />',
+	'block-tag':
+		'<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z" /> <circle cx="7.5" cy="7.5" r=".5" fill="currentColor" />',
+	'block-suitcase':
+		'<path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" /> <rect width="20" height="14" x="2" y="6" rx="2" />',
+	'block-share':
+		'<circle cx="18" cy="5" r="3" /> <circle cx="6" cy="12" r="3" /> <circle cx="18" cy="19" r="3" /> <line x1="8.59" x2="15.42" y1="13.51" y2="17.49" /> <line x1="15.41" x2="8.59" y1="6.51" y2="10.49" />',
+	'block-paycard':
+		'<rect width="20" height="14" x="2" y="5" rx="2" /> <line x1="2" x2="22" y1="10" y2="10" />',
+	'block-buildin':
+		'<path d="M10 12h4" /> <path d="M10 8h4" /> <path d="M14 21v-3a2 2 0 0 0-4 0v3" /> <path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2" /> <path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16" />',
+	'block-unlocked':
+		'<rect width="18" height="11" x="3" y="11" rx="2" ry="2" /> <path d="M7 11V7a5 5 0 0 1 9.9-1" />',
+	'block-dollar-sign':
+		'<line x1="12" x2="12" y1="2" y2="22" /> <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />',
+	'block-@':
+		'<circle cx="12" cy="12" r="4" /> <path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8" />',
+	'block-add': '<path d="M5 12h14" /> <path d="M12 5v14" />',
+	'block-arrow-pointer':
+		'<path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.438 1.435l-1.579 6.126a.5.5 0 0 1-.947.063z" />',
+	'block-block': '<rect width="18" height="18" x="3" y="3" rx="2" />',
+	'block-table':
+		'<rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M9 3v18" /> <path d="M15 3v18" />',
+	'block-table-2':
+		'<path d="M12 3v18" /> <rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" /> <path d="M3 15h18" />',
+	'block-text-l': '<path d="M21 5H3" /> <path d="M15 12H3" /> <path d="M17 19H3" />',
+	'block-text-img-l': '<rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M9 3v18" />',
+	'block-text-img-r': '<rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M15 3v18" />',
+	'block-text-img-t-l': '<rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M3 9h18" />',
+	'block-text-img-c':
+		'<rect width="18" height="7" x="3" y="3" rx="1" /> <rect width="9" height="7" x="3" y="14" rx="1" /> <rect width="5" height="7" x="16" y="14" rx="1" />',
+	'block-text-img-r-l':
+		'<rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M12 3v18" />',
+	'block-center-m':
+		'<rect width="18" height="7" x="3" y="3" rx="1" /> <rect width="9" height="7" x="3" y="14" rx="1" /> <rect width="5" height="7" x="16" y="14" rx="1" />',
+	'block-1-2block': '<rect width="18" height="18" x="3" y="3" rx="2" /> <path d="M12 3v18" />',
+};
 ---
 
 <!doctype html>
@@ -11,19 +63,23 @@ const liveEndpoint = '/api/space-health';
 		<title>Storyblok space health</title>
 		<style>
 			:root {
-				--bg: #0f1117;
-				--panel: #171a22;
-				--panel-2: #1f2330;
+				--bg: #0e1016;
+				--panel: #161922;
+				--panel-2: #1e222e;
 				--line: #2a2f3d;
-				--text: #e6e8ee;
-				--muted: #9aa1b1;
+				--text: #e7e9ef;
+				--muted: #98a0b0;
 				--accent: #09b3af;
-				--page: #09b3af;
-				--nested: #f0a020;
-				--universal: #7e8cff;
-				--unclassified: #6b7280;
-				--bad: #e2526b;
+				--role-page: #09b3af;
+				--role-section: #4caf7d;
+				--role-subcomponent: #f0a020;
+				--role-unused: #e2526b;
+				--type-page: #09b3af;
+				--type-nested: #f0a020;
+				--type-universal: #7e8cff;
+				--type-unclassified: #6b7280;
 				--good: #4caf7d;
+				--bad: #e2526b;
 			}
 			* {
 				box-sizing: border-box;
@@ -31,18 +87,20 @@ const liveEndpoint = '/api/space-health';
 			body {
 				margin: 0;
 				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-				background: var(--bg);
+				background: radial-gradient(1200px 600px at 70% -10%, #18223a 0%, var(--bg) 55%);
 				color: var(--text);
 				padding: 32px;
+				min-height: 100vh;
 			}
 			h1 {
-				font-size: 22px;
+				font-size: 24px;
 				margin: 0 0 4px;
+				letter-spacing: -0.3px;
 			}
 			.sub {
 				color: var(--muted);
 				font-size: 13px;
-				margin-bottom: 20px;
+				margin-bottom: 18px;
 			}
 			.sourcebar {
 				display: flex;
@@ -59,13 +117,10 @@ const liveEndpoint = '/api/space-health';
 				padding: 8px 12px;
 				font-size: 13px;
 				cursor: pointer;
+				transition: border-color 0.15s;
 			}
 			button:hover {
 				border-color: var(--accent);
-			}
-			button:disabled {
-				opacity: 0.5;
-				cursor: default;
 			}
 			.state {
 				color: var(--muted);
@@ -77,14 +132,14 @@ const liveEndpoint = '/api/space-health';
 			}
 			.cards {
 				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+				grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
 				gap: 12px;
 				margin-bottom: 24px;
 			}
 			.card {
 				background: var(--panel);
 				border: 1px solid var(--line);
-				border-radius: 10px;
+				border-radius: 12px;
 				padding: 16px;
 			}
 			.card .num {
@@ -93,30 +148,25 @@ const liveEndpoint = '/api/space-health';
 			}
 			.card .lbl {
 				color: var(--muted);
-				font-size: 12px;
+				font-size: 11px;
 				text-transform: uppercase;
 				letter-spacing: 0.5px;
 				margin-top: 4px;
 			}
-			.grid2 {
+			.charts {
 				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 20px;
+				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+				gap: 16px;
 				margin-bottom: 24px;
-			}
-			@media (max-width: 880px) {
-				.grid2 {
-					grid-template-columns: 1fr;
-				}
 			}
 			.panel {
 				background: var(--panel);
 				border: 1px solid var(--line);
-				border-radius: 10px;
+				border-radius: 12px;
 				padding: 18px;
 			}
 			.panel h2 {
-				font-size: 14px;
+				font-size: 13px;
 				margin: 0 0 14px;
 				text-transform: uppercase;
 				letter-spacing: 0.5px;
@@ -124,24 +174,22 @@ const liveEndpoint = '/api/space-health';
 			}
 			.chart {
 				display: flex;
-				gap: 18px;
+				gap: 16px;
 				align-items: center;
-			}
-			.chart svg {
-				flex: 0 0 auto;
 			}
 			.slice {
 				cursor: pointer;
 				transition: opacity 0.15s;
 			}
 			.slice:hover {
-				opacity: 0.85;
+				opacity: 0.82;
 			}
 			.legend {
 				display: flex;
 				flex-direction: column;
-				gap: 8px;
-				font-size: 13px;
+				gap: 6px;
+				font-size: 12.5px;
+				flex: 1;
 			}
 			.legend .item {
 				display: flex;
@@ -167,22 +215,25 @@ const liveEndpoint = '/api/space-health';
 			.legend .count {
 				color: var(--muted);
 				margin-left: auto;
+				font-variant-numeric: tabular-nums;
 			}
 			.controls {
 				display: flex;
 				gap: 8px;
 				align-items: center;
-				margin-bottom: 14px;
+				margin-bottom: 12px;
 				flex-wrap: wrap;
 			}
 			.chip {
 				background: var(--panel-2);
-				border: 1px solid var(--line);
-				color: var(--muted);
-				border-radius: 20px;
-				padding: 6px 12px;
-				font-size: 12px;
+				border: 1px solid #3a4150;
+				color: var(--text);
+				border-radius: 8px;
+				padding: 8px 14px;
+				font-size: 13px;
+				font-weight: 500;
 				cursor: pointer;
+				box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
 			}
 			.chip:hover {
 				color: var(--text);
@@ -206,7 +257,7 @@ const liveEndpoint = '/api/space-health';
 			table {
 				width: 100%;
 				border-collapse: collapse;
-				font-size: 13px;
+				font-size: 15px;
 			}
 			th,
 			td {
@@ -215,18 +266,62 @@ const liveEndpoint = '/api/space-health';
 				border-bottom: 1px solid var(--line);
 			}
 			th {
-				color: var(--muted);
+				color: var(--text);
 				font-weight: 600;
+				font-size: 13px;
 				cursor: pointer;
 				user-select: none;
 				white-space: nowrap;
 			}
 			th.num,
 			td.num {
-				text-align: right;
+				text-align: left;
+				font-variant-numeric: tabular-nums;
 			}
 			tbody tr:hover {
 				background: var(--panel-2);
+			}
+			.name-cell {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.icon-badge {
+				width: 34px;
+				height: 34px;
+				border-radius: 6px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 13px;
+				flex: 0 0 auto;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+			}
+			.icon-badge.empty {
+				background: var(--panel-2);
+				color: #4b5263;
+			}
+			.color-cell {
+				display: flex;
+				align-items: center;
+				gap: 7px;
+			}
+			.color-swatch {
+				width: 16px;
+				display: inline-block;
+				vertical-align: middle;
+				height: 16px;
+				border-radius: 4px;
+				border: 1px solid rgba(255, 255, 255, 0.15);
+				flex: 0 0 auto;
+			}
+			.color-hex {
+				color: var(--muted);
+				font-size: 11.5px;
+				font-variant-numeric: tabular-nums;
+			}
+			.muted-dash {
+				color: #4b5263;
 			}
 			.tag {
 				display: inline-block;
@@ -234,22 +329,23 @@ const liveEndpoint = '/api/space-health';
 				border-radius: 20px;
 				font-size: 11px;
 				font-weight: 600;
+				text-transform: capitalize;
 			}
 			.tag.page {
-				background: rgba(9, 179, 175, 0.15);
-				color: var(--page);
+				background: rgba(9, 179, 175, 0.16);
+				color: var(--role-page);
 			}
-			.tag.nested {
-				background: rgba(240, 160, 32, 0.15);
-				color: var(--nested);
+			.tag.section {
+				background: rgba(76, 175, 125, 0.16);
+				color: var(--role-section);
 			}
-			.tag.universal {
-				background: rgba(126, 140, 255, 0.18);
-				color: var(--universal);
+			.tag.subcomponent {
+				background: rgba(240, 160, 32, 0.16);
+				color: var(--role-subcomponent);
 			}
-			.tag.unclassified {
-				background: rgba(154, 161, 177, 0.15);
-				color: var(--muted);
+			.tag.unused {
+				background: rgba(226, 82, 107, 0.16);
+				color: var(--role-unused);
 			}
 			.dot {
 				display: inline-block;
@@ -265,7 +361,6 @@ const liveEndpoint = '/api/space-health';
 			}
 			.zero {
 				color: var(--bad);
-				font-weight: 600;
 			}
 			.rowcount {
 				color: var(--muted);
@@ -284,17 +379,29 @@ const liveEndpoint = '/api/space-health';
 		<div class="state" id="state">Loading component insights...</div>
 		<div id="dashboard" style="display: none">
 			<div class="cards" id="cards"></div>
-			<div class="grid2">
+			<div class="charts">
 				<div class="panel">
-					<h2>Component types</h2>
+					<h2>Component role</h2>
 					<div class="chart">
-						<div id="pie-types"></div><div class="legend" id="legend-types"></div>
+						<div id="pie-role"></div><div class="legend" id="legend-role"></div>
+					</div>
+				</div>
+				<div class="panel">
+					<h2>Schema type</h2>
+					<div class="chart">
+						<div id="pie-type"></div><div class="legend" id="legend-type"></div>
 					</div>
 				</div>
 				<div class="panel">
 					<h2>Usage</h2>
 					<div class="chart">
 						<div id="pie-usage"></div><div class="legend" id="legend-usage"></div>
+					</div>
+				</div>
+				<div class="panel">
+					<h2>Styling completeness</h2>
+					<div class="chart">
+						<div id="pie-styling"></div><div class="legend" id="legend-styling"></div>
 					</div>
 				</div>
 			</div>
@@ -309,15 +416,16 @@ const liveEndpoint = '/api/space-health';
 					<thead>
 						<tr>
 							<th data-sort="name">Component</th>
+							<th data-sort="role">Role</th>
 							<th data-sort="classification">Type</th>
 							<th class="num" data-sort="pageSectionUsage">In page</th>
 							<th class="num" data-sort="totalUsage">Total</th>
-							<th class="num" data-sort="asRootUsage">As page</th>
 							<th class="num" data-sort="nestedUsage">Nested</th>
 							<th class="num" data-sort="storyCount">Stories</th>
-							<th>Icon</th>
-							<th>Color</th>
+							<th data-sort="icon">Icon</th>
+							<th data-sort="color">Color</th>
 							<th>Preview</th>
+							<th>Preset</th>
 						</tr>
 					</thead>
 					<tbody id="rows"></tbody>
@@ -325,30 +433,21 @@ const liveEndpoint = '/api/space-health';
 			</div>
 		</div>
 
-		<script is:inline define:vars={{ staticData, liveEndpoint }}>
+		<script is:inline define:vars={{ staticData, liveEndpoint, iconSvg }}>
 			let REPORT = null;
-			let activeFilter = 'page-section';
+			let activeFilter = 'in-page';
 			let sortKey = 'pageSectionUsage';
 			let sortDir = -1;
 
-			const COLORS = {
-				page: '#09b3af',
-				nested: '#f0a020',
-				universal: '#7e8cff',
-				unclassified: '#6b7280',
-				used: '#4caf7d',
-				unused: '#e2526b',
-			};
+			const ICON_SVG = iconSvg;
 
 			const CHIPS = [
-				{ id: 'page-section', label: 'In page components' },
+				{ id: 'in-page', label: 'In page components' },
 				{ id: 'all', label: 'All' },
-				{ id: 'page', label: 'Page' },
-				{ id: 'nested', label: 'Nested' },
-				{ id: 'universal', label: 'Universal' },
-				{ id: 'unclassified', label: 'Unclassified' },
-				{ id: 'used', label: 'Used' },
-				{ id: 'unused', label: 'Unused' },
+				{ id: 'role:page', label: 'Page' },
+				{ id: 'role:section', label: 'Section' },
+				{ id: 'role:subcomponent', label: 'Subcomponent' },
+				{ id: 'role:unused', label: 'Unused' },
 				{ id: 'no-icon', label: 'Missing icon' },
 				{ id: 'no-color', label: 'Missing color' },
 				{ id: 'no-preview', label: 'Missing preview' },
@@ -360,28 +459,18 @@ const liveEndpoint = '/api/space-health';
 					ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]
 				);
 
-			function predicate(component, mode) {
-				switch (mode) {
-					case 'page-section':
-						return component.pageSectionUsage > 0;
-					case 'page':
-					case 'nested':
-					case 'universal':
-					case 'unclassified':
-						return component.classification === mode;
-					case 'used':
-						return component.totalUsage > 0;
-					case 'unused':
-						return component.totalUsage === 0;
-					case 'no-icon':
-						return !component.hasIcon;
-					case 'no-color':
-						return !component.hasColor;
-					case 'no-preview':
-						return !component.hasPreview;
-					default:
-						return true;
-				}
+			function predicate(c, mode) {
+				if (mode === 'all') return true;
+				if (mode === 'in-page') return c.pageSectionUsage > 0;
+				if (mode === 'used') return c.totalUsage > 0;
+				if (mode === 'unused') return c.totalUsage === 0;
+				if (mode === 'no-icon') return !c.hasIcon;
+				if (mode === 'no-color') return !c.hasColor;
+				if (mode === 'no-preview') return !c.hasPreview;
+				if (mode.startsWith('role:')) return c.role === mode.slice(5);
+				if (mode.startsWith('type:')) return c.classification === mode.slice(5);
+				if (mode.startsWith('styling:')) return c.styling === mode.slice(8);
+				return true;
 			}
 
 			function setFilter(mode) {
@@ -389,6 +478,63 @@ const liveEndpoint = '/api/space-health';
 				renderChips();
 				renderLegendActive();
 				renderTable();
+			}
+
+			function isLight(hex) {
+				const match = /^#([0-9a-f]{6})$/i.exec(hex || '');
+				if (!match) return false;
+				const int = parseInt(match[1], 16);
+				const r = (int >> 16) & 255;
+				const g = (int >> 8) & 255;
+				const b = int & 255;
+				return (0.299 * r + 0.587 * g + 0.114 * b) / 255 > 0.62;
+			}
+
+			function iconGlyph(name, color) {
+				const body = ICON_SVG[name];
+				if (!body) return '';
+				return (
+					'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="' +
+					color +
+					'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:' +
+					color +
+					'">' +
+					body +
+					'</svg>'
+				);
+			}
+
+			function iconBadge(c) {
+				if (!c.icon && !c.color) {
+					return '<span class="icon-badge empty" title="no icon, no color">·</span>';
+				}
+				const bg = c.color && /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : '#3a3f4d';
+				const fg = isLight(bg) ? '#10131a' : '#ffffff';
+				const title = (c.icon || 'no icon') + (c.color ? ' · ' + c.color : '');
+				return (
+					'<span class="icon-badge" style="background:' +
+					bg +
+					'" title="' +
+					escapeHtml(title) +
+					'">' +
+					(c.icon ? iconGlyph(c.icon, fg) : '') +
+					'</span>'
+				);
+			}
+
+			function colorCell(c) {
+				if (!c.color) return '<span class="muted-dash">—</span>';
+				const isHex = /^#[0-9a-f]{6}$/i.test(c.color);
+				const swatch = isHex
+					? c.color
+					: 'repeating-linear-gradient(45deg,#2a2f3d,#2a2f3d 4px,#1e222e 4px,#1e222e 8px)';
+				return (
+					'<span class="color-swatch" style="background:' +
+					swatch +
+					'" title="' +
+					escapeHtml(c.color) +
+					'"></span>'
+				);
 			}
 
 			function dot(on) {
@@ -446,7 +592,7 @@ const liveEndpoint = '/api/space-health';
 
 			function renderPie(containerId, legendId, segments) {
 				const total = segments.reduce((sum, seg) => sum + seg.value, 0) || 1;
-				const size = 150;
+				const size = 132;
 				const cx = size / 2;
 				const cy = size / 2;
 				const radius = size / 2 - 2;
@@ -461,7 +607,7 @@ const liveEndpoint = '/api/space-health';
 							'<path class="slice" data-filter="' +
 							seg.filter +
 							'" d="' +
-							arcPath(cx, cy, radius, start, end) +
+							arcPath(cx, cy, radius, start, end - 0.004) +
 							'" fill="' +
 							seg.color +
 							'"><title>' +
@@ -488,13 +634,13 @@ const liveEndpoint = '/api/space-health';
 					'" cy="' +
 					cy +
 					'" r="' +
-					radius * 0.55 +
-					'" fill="#171a22"></circle>' +
+					radius * 0.56 +
+					'" fill="#161922"></circle>' +
 					'<text x="' +
 					cx +
 					'" y="' +
-					(cy + 5) +
-					'" text-anchor="middle" fill="#e6e8ee" font-size="20" font-weight="700">' +
+					(cy + 6) +
+					'" text-anchor="middle" fill="#e7e9ef" font-size="22" font-weight="700">' +
 					total +
 					'</text></svg>';
 
@@ -515,11 +661,11 @@ const liveEndpoint = '/api/space-health';
 
 				document
 					.querySelectorAll('#' + containerId + ' .slice, #' + legendId + ' .item')
-					.forEach(el => {
+					.forEach(el =>
 						el.addEventListener('click', () =>
 							setFilter(el.getAttribute('data-filter'))
-						);
-					});
+						)
+					);
 			}
 
 			function renderLegendActive() {
@@ -538,7 +684,8 @@ const liveEndpoint = '/api/space-health';
 					.sort((a, b) => {
 						const av = a[sortKey];
 						const bv = b[sortKey];
-						if (typeof av === 'string') return av.localeCompare(bv) * sortDir;
+						if (typeof av === 'string')
+							return (av || '').localeCompare(bv || '') * sortDir;
 						return (av - bv) * sortDir;
 					});
 				document.getElementById('rowcount').textContent =
@@ -551,10 +698,13 @@ const liveEndpoint = '/api/space-health';
 							escapeHtml(c.name) +
 							'</td>' +
 							'<td><span class="tag ' +
-							c.classification +
+							c.role +
 							'">' +
-							c.classification +
+							c.role +
 							'</span></td>' +
+							'<td>' +
+							c.classification +
+							'</td>' +
 							'<td class="num">' +
 							c.pageSectionUsage +
 							'</td>' +
@@ -564,22 +714,22 @@ const liveEndpoint = '/api/space-health';
 							c.totalUsage +
 							'</td>' +
 							'<td class="num">' +
-							c.asRootUsage +
-							'</td>' +
-							'<td class="num">' +
 							c.nestedUsage +
 							'</td>' +
 							'<td class="num">' +
 							c.storyCount +
 							'</td>' +
 							'<td>' +
-							dot(c.hasIcon) +
+							iconBadge(c) +
 							'</td>' +
 							'<td>' +
-							dot(c.hasColor) +
+							colorCell(c) +
 							'</td>' +
 							'<td>' +
 							dot(c.hasPreview) +
+							'</td>' +
+							'<td>' +
+							dot(c.hasPreset) +
 							'</td>' +
 							'</tr>'
 					)
@@ -598,15 +748,15 @@ const liveEndpoint = '/api/space-health';
 
 				const cards = [
 					{ num: s.totalComponents, lbl: 'Components' },
-					{ num: s.pageSectionComponents, lbl: 'In page array' },
-					{ num: s.pageComponents, lbl: 'Page' },
-					{ num: s.nestedComponents, lbl: 'Nested' },
-					{ num: s.universalComponents, lbl: 'Universal' },
-					{ num: s.usedComponents, lbl: 'Used' },
-					{ num: s.unusedComponents, lbl: 'Unused' },
+					{ num: s.rolePage, lbl: 'Page types' },
+					{ num: s.roleSection, lbl: 'Page sections' },
+					{ num: s.roleSubcomponent, lbl: 'Subcomponents' },
+					{ num: s.roleUnused, lbl: 'Unused' },
+					{ num: s.stylingFull, lbl: 'Fully styled' },
 					{ num: s.withIcon, lbl: 'With icon' },
 					{ num: s.withColor, lbl: 'With color' },
 					{ num: s.withPreview, lbl: 'With preview' },
+					{ num: s.withPreset, lbl: 'With preset' },
 				];
 				document.getElementById('cards').innerHTML = cards
 					.map(
@@ -619,34 +769,85 @@ const liveEndpoint = '/api/space-health';
 					)
 					.join('');
 
-				renderPie('pie-types', 'legend-types', [
-					{ label: 'Page', value: s.pageComponents, color: COLORS.page, filter: 'page' },
+				renderPie('pie-role', 'legend-role', [
+					{
+						label: 'Page type',
+						value: s.rolePage,
+						color: '#09b3af',
+						filter: 'role:page',
+					},
+					{
+						label: 'Page section',
+						value: s.roleSection,
+						color: '#4caf7d',
+						filter: 'role:section',
+					},
+					{
+						label: 'Subcomponent',
+						value: s.roleSubcomponent,
+						color: '#f0a020',
+						filter: 'role:subcomponent',
+					},
+					{
+						label: 'Unused',
+						value: s.roleUnused,
+						color: '#e2526b',
+						filter: 'role:unused',
+					},
+				]);
+				renderPie('pie-type', 'legend-type', [
+					{
+						label: 'Page',
+						value: s.pageComponents,
+						color: '#09b3af',
+						filter: 'type:page',
+					},
 					{
 						label: 'Nested',
 						value: s.nestedComponents,
-						color: COLORS.nested,
-						filter: 'nested',
+						color: '#f0a020',
+						filter: 'type:nested',
 					},
 					{
 						label: 'Universal',
 						value: s.universalComponents,
-						color: COLORS.universal,
-						filter: 'universal',
+						color: '#7e8cff',
+						filter: 'type:universal',
 					},
 					{
 						label: 'Unclassified',
 						value: s.unclassifiedComponents,
-						color: COLORS.unclassified,
-						filter: 'unclassified',
+						color: '#6b7280',
+						filter: 'type:unclassified',
 					},
 				]);
 				renderPie('pie-usage', 'legend-usage', [
-					{ label: 'Used', value: s.usedComponents, color: COLORS.used, filter: 'used' },
+					{ label: 'Used', value: s.usedComponents, color: '#4caf7d', filter: 'used' },
 					{
 						label: 'Unused',
 						value: s.unusedComponents,
-						color: COLORS.unused,
+						color: '#e2526b',
 						filter: 'unused',
+					},
+				]);
+				renderPie('pie-styling', 'legend-styling', [
+					{
+						label: 'Fully styled',
+						value: s.stylingFull,
+						color: '#4caf7d',
+						filter: 'styling:full',
+					},
+					{
+						label: 'Partial',
+						value: s.stylingPartial,
+						color: '#f0a020',
+						filter: 'styling:partial',
+					},
+					{
+						label: 'None',
+						value: s.stylingNone,
+						color: '#6b7280',
+						filter: 'styling:none',
 					},
 				]);
 
