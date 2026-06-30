@@ -1,0 +1,81 @@
+<!--
+  Interactive selection gallery for the component-screenshots skill.
+  Fill in: <ComponentName> (page title + heading + img filenames), one <figure data-index="N"> per captured
+  shot, and the `labels` map (index -> page slug). The script wires click/double-click selection, the blue
+  "selected" highlight, window.__confirmed, and the SELECTION_CONFIRMED:<index> sentinel that Playwright's
+  browser_wait_for watches. Write the filled result to .playwright-mcp/<ComponentName>-gallery.html and serve
+  .playwright-mcp/ over localhost (the MCP blocks file:). Images are referenced by bare filename so the
+  relative src resolves over HTTP.
+-->
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title><ComponentName> — pick one</title>
+    <style>
+      body { margin: 0; background: #1b1b1b; color: #eee; font: 14px/1.4 system-ui, -apple-system, sans-serif; padding: 24px; }
+      h1 { font-size: 18px; margin: 0 0 4px; }
+      p.sub { margin: 0 0 14px; color: #9aa; }
+      #bar { position: sticky; top: 0; z-index: 10; background: #101010; padding: 12px 16px; border: 1px solid #333; border-radius: 8px; margin-bottom: 20px; display: flex; align-items: center; gap: 16px; }
+      #status { font-weight: 600; flex: 1; }
+      #save { background: #2b6cff; color: #fff; border: 0; border-radius: 6px; padding: 10px 18px; font-weight: 700; cursor: pointer; }
+      #save:disabled { background: #444; color: #999; cursor: not-allowed; }
+      .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 20px; }
+      figure { margin: 0; border: 3px solid #333; border-radius: 8px; overflow: hidden; background: #fff; cursor: pointer; transition: border-color .12s, box-shadow .12s; }
+      figure:hover { border-color: #777; }
+      figure.selected { border-color: #2b6cff; box-shadow: 0 0 0 4px rgba(43, 108, 255, .35); }
+      figcaption { display: flex; justify-content: space-between; gap: 12px; background: #2b2b2b; color: #fff; padding: 8px 12px; font-weight: 600; }
+      figure.selected figcaption { background: #2b6cff; }
+      figcaption .meta { color: #8cf; font-weight: 400; }
+      .imgwrap { display: flex; align-items: center; justify-content: center; max-height: 440px; overflow: hidden; background: repeating-conic-gradient(#f3f3f3 0 25%, #e9e9e9 0 50%) 50% / 22px 22px; }
+      img { max-width: 100%; max-height: 440px; object-fit: contain; display: block; pointer-events: none; }
+    </style>
+  </head>
+  <body>
+    <h1><ComponentName> — click the instance you like best</h1>
+    <p class="sub">Click a card to select it (or double-click to pick instantly), then press "Save this one".</p>
+    <div id="bar">
+      <span id="status">No selection yet — click one of the cards below.</span>
+      <button id="save" disabled>Save this one</button>
+    </div>
+    <div class="grid">
+      <!-- repeat per shot; data-index drives the recorded value -->
+      <figure data-index="0">
+        <figcaption><span>Instance 0</span><span class="meta">/solutions/foo · 880×540</span></figcaption>
+        <div class="imgwrap"><img src="<ComponentName>-00.png" alt="Instance 0" /></div>
+      </figure>
+      <!-- ... -->
+    </div>
+    <script>
+      window.__selected = null;
+      window.__confirmed = null;
+      const labels = { 0: '/solutions/foo' /*, 1: '...', ... */ };
+      const status = document.getElementById('status');
+      const saveBtn = document.getElementById('save');
+      const figs = Array.from(document.querySelectorAll('figure'));
+      function select(i) {
+        window.__selected = i;
+        figs.forEach((f) => f.classList.toggle('selected', Number(f.dataset.index) === i));
+        status.textContent = 'Selected: Instance ' + i + ' (' + labels[i] + ') — press "Save this one".';
+        saveBtn.disabled = false;
+      }
+      function confirmSelection() {
+        if (window.__selected === null) return;
+        window.__confirmed = window.__selected;
+        status.textContent =
+          'SELECTION_CONFIRMED:' + window.__confirmed + ' — Instance ' + window.__confirmed + ' will be saved.';
+        saveBtn.textContent = 'Saved ✓';
+        saveBtn.disabled = true;
+      }
+      figs.forEach((f) => {
+        const i = Number(f.dataset.index);
+        f.addEventListener('click', () => select(i));
+        f.addEventListener('dblclick', () => {
+          select(i);
+          confirmSelection();
+        });
+      });
+      saveBtn.addEventListener('click', confirmSelection);
+    </script>
+  </body>
+</html>
