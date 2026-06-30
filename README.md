@@ -14,6 +14,31 @@ Three sibling skills set the three independent fields on a Storyblok component (
 
 A single component (e.g. `Article`) can carry all three at once. Each skill writes only its own field and leaves the others untouched.
 
+## Prerequisites — MCP servers & credentials
+
+These skills drive external services through MCP; none ship a bundled key. Each person running them configures the access locally — **nothing here is auto-installed and no credential lives in the repo.** Set these up once before invoking any skill:
+
+| Dependency        | Used by                  | Credential you must provide                                                                                   | How to configure                                                                                       |
+| ----------------- | ------------------------ | ------------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------ |
+| **Storyblok MCP** | all three                | A **Storyblok personal access token** (Management API) reaching space `293515734262231` (region `eu`) — needs read, component **write**, and **asset upload** | `claude mcp add …` — see below                                                                         |
+| **GitHub**        | `component-colors` only  | Read access to the **private** repo `tomtom-internal/drumkit-monorepo`                                        | The connected **claude.ai GitHub** MCP (authorize the `tomtom-internal` org via SAML SSO) **or** `gh auth login` |
+| **Playwright MCP**| `component-screenshots` only | none (local browser)                                                                                     | `claude mcp add playwright npx @playwright/mcp@latest` — must be **headed** so you can click the gallery |
+
+`component-screenshots` also uploads the captured PNG to Storyblok via a **pre-signed S3 URL** that the Storyblok `upload_asset` call returns — that needs no separate key beyond the Storyblok token above. No Algolia, TomTom Maps, or other credentials are used by these three skills.
+
+### Storyblok MCP (required by every skill)
+
+The skills call `mcp__storyblok__*` (`execute_readonly`, `execute_mutating`, `upload_asset`, `upload_asset_finish`, `search`, `describe`) — the official Storyblok Management MCP. It is **not** declared in this repo and is **not** auto-installed. Add it yourself, named **exactly `storyblok`** (lowercase) so the `mcp__storyblok__…` tool ids the skills use resolve:
+
+```bash
+claude mcp add --transport http storyblok https://mcp.labs.storyblok.com/mcp \
+  --header "Authorization: Bearer <YOUR_STORYBLOK_PERSONAL_ACCESS_TOKEN>"
+```
+
+- Get the token from Storyblok → **My account → Personal access tokens** (or a space-scoped Management API token). It must reach space `293515734262231` and be allowed to **write components** and **upload assets** — read-only is not enough for `component-icons`/`-colors` (they call `updateComponent`) or `component-screenshots` (it uploads an asset).
+- Verify with `claude mcp list`: `storyblok` should report **Connected**.
+- This is a **write-capable secret** — it edits live component config and uploads assets. Keep it out of the repo.
+
 ## component-icons
 
 Pick the best **Block icon** from Storyblok's built-in (lucide-based) picker set and write it to the component's `icon` field, matched to what the blok is.
