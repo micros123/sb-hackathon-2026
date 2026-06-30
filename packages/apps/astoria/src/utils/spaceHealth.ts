@@ -6,6 +6,16 @@ export type ComponentRole = 'page' | 'section' | 'subcomponent' | 'unused';
 
 export type StylingCompleteness = 'full' | 'partial' | 'none';
 
+export type SeoSignal = {
+	totalStories: number;
+	withTitle: number;
+	withDescription: number;
+};
+
+export type ReportSignals = {
+	seo: SeoSignal;
+};
+
 export type ComponentRow = {
 	name: string;
 	displayName: string;
@@ -51,6 +61,7 @@ export type SpaceHealthReport = {
 		withPreview: number;
 		withPreset: number;
 	};
+	signals: ReportSignals;
 	components: ComponentRow[];
 };
 
@@ -189,9 +200,25 @@ export function countComponentUsage(stories: Story[]): Map<string, UsageCounts> 
 	return counts;
 }
 
+const isNonEmpty = (value: unknown): boolean =>
+	typeof value === 'string' ? value.trim().length > 0 : Boolean(value);
+
+export function computeSeoSignal(stories: Story[]): SeoSignal {
+	let withTitle = 0;
+	let withDescription = 0;
+	for (const story of stories) {
+		const seo = story.content?.seo as Record<string, unknown> | undefined;
+		if (!seo || typeof seo !== 'object') continue;
+		if (isNonEmpty(seo.title)) withTitle++;
+		if (isNonEmpty(seo.description)) withDescription++;
+	}
+	return { totalStories: stories.length, withTitle, withDescription };
+}
+
 export function buildReport(
 	schemas: ComponentSchema[],
 	usage: Map<string, UsageCounts>,
+	signals: ReportSignals,
 	context: {
 		spaceId: string;
 		contentVersion: string;
@@ -268,5 +295,5 @@ export function buildReport(
 		withPreset: components.filter(row => row.hasPreset).length,
 	};
 
-	return { ...context, summary, components };
+	return { ...context, summary, signals, components };
 }

@@ -234,6 +234,70 @@ const iconSvg: Record<string, string> = {
 			.leg .m {
 				color: var(--muted);
 			}
+			.scorewrap {
+				display: flex;
+				justify-content: center;
+				margin-bottom: 12px;
+			}
+			.tileshint {
+				font-size: 11px;
+				color: var(--muted);
+				margin: 0 0 12px;
+			}
+			.tiles {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+			}
+			.tile {
+				border: 1px solid var(--line);
+				border-left: 4px solid var(--line);
+				border-radius: 12px;
+				padding: 12px;
+				cursor: pointer;
+				background: #fff;
+				transition:
+					box-shadow 0.15s,
+					transform 0.05s;
+			}
+			.tile.info {
+				cursor: default;
+			}
+			.tile:hover:not(.info) {
+				box-shadow: 0 4px 14px rgba(27, 36, 63, 0.1);
+			}
+			.tile:active:not(.info) {
+				transform: translateY(1px);
+			}
+			.tile.on {
+				outline: 2px solid var(--teal);
+			}
+			.tile .te {
+				font-size: 20px;
+				line-height: 1;
+			}
+			.tile .tl {
+				font-size: 12.5px;
+				font-weight: 700;
+				margin-top: 6px;
+			}
+			.tile .tv {
+				font-size: 12px;
+				color: var(--muted);
+				margin-top: 2px;
+				font-variant-numeric: tabular-nums;
+			}
+			.tile .tbar {
+				height: 5px;
+				border-radius: 3px;
+				background: #eef0f7;
+				margin-top: 8px;
+				overflow: hidden;
+			}
+			.tile .tbar span {
+				display: block;
+				height: 100%;
+			}
 			.chips {
 				display: flex;
 				gap: 8px;
@@ -371,10 +435,12 @@ const iconSvg: Record<string, string> = {
 				<div class="cards" id="cards"></div>
 				<div class="panels">
 					<div class="panel">
-						<h2>Component role</h2>
-						<div class="donutwrap">
-							<div id="donut"></div><div class="leg" id="leg"></div>
-						</div>
+						<h2>Space health</h2>
+						<div class="scorewrap"><div id="score"></div></div>
+						<p class="tileshint">
+							Quick wins — click a tile to see the components that need it.
+						</p>
+						<div class="tiles" id="tiles"></div>
 					</div>
 					<div class="panel">
 						<h2>Components</h2>
@@ -451,6 +517,7 @@ const iconSvg: Record<string, string> = {
 				if (mode === 'no-icon') return !c.hasIcon;
 				if (mode === 'no-color') return !c.hasColor;
 				if (mode === 'no-preview') return !c.hasPreview;
+				if (mode === 'no-preset') return !c.hasPreset;
 				if (mode.startsWith('role:')) return c.role === mode.slice(5);
 				return true;
 			}
@@ -458,8 +525,12 @@ const iconSvg: Record<string, string> = {
 			function setFilter(mode) {
 				activeFilter = mode;
 				renderChips();
-				renderLegendActive();
+				renderTilesActive();
 				renderTable();
+			}
+
+			function severity(pct) {
+				return pct >= 80 ? '#4caf7d' : pct >= 40 ? '#f0a020' : '#e2526b';
 			}
 
 			function isLight(hex) {
@@ -571,33 +642,25 @@ const iconSvg: Record<string, string> = {
 				);
 			}
 
-			function donut(segments, size) {
-				const total = segments.reduce((sum, s) => sum + s.value, 0) || 1;
+			function ringGauge(pct, size) {
 				const cx = size / 2;
 				const cy = size / 2;
-				const radius = size / 2 - 2;
-				let angle = -Math.PI / 2;
-				const paths = segments
-					.filter(s => s.value > 0)
-					.map(s => {
-						const start = angle;
-						const end = angle + (s.value / total) * Math.PI * 2;
-						angle = end;
-						return (
-							'<path class="slice" data-filter="' +
-							s.filter +
-							'" style="cursor:pointer" d="' +
-							arcPath(cx, cy, radius, start, end - 0.004) +
-							'" fill="' +
-							s.color +
-							'"><title>' +
-							s.label +
-							': ' +
-							s.value +
-							'</title></path>'
-						);
-					})
-					.join('');
+				const radius = size / 2 - 6;
+				const color = severity(pct);
+				const track = arcPath(
+					cx,
+					cy,
+					radius,
+					-Math.PI / 2,
+					-Math.PI / 2 + Math.PI * 2 - 0.0001
+				);
+				const filled = arcPath(
+					cx,
+					cy,
+					radius,
+					-Math.PI / 2,
+					-Math.PI / 2 + Math.PI * 2 * (pct / 100)
+				);
 				return (
 					'<svg width="' +
 					size +
@@ -608,30 +671,131 @@ const iconSvg: Record<string, string> = {
 					' ' +
 					size +
 					'">' +
-					paths +
-					'<circle cx="' +
-					cx +
-					'" cy="' +
-					cy +
-					'" r="' +
-					radius * 0.58 +
-					'" fill="#fff"></circle>' +
+					'<path d="' +
+					track +
+					'" fill="none" stroke="#eef0f7" stroke-width="12" stroke-linecap="round" />' +
+					'<path d="' +
+					filled +
+					'" fill="none" stroke="' +
+					color +
+					'" stroke-width="12" stroke-linecap="round" />' +
 					'<text x="' +
 					cx +
 					'" y="' +
-					(cy + 6) +
-					'" text-anchor="middle" fill="#1b243f" font-size="22" font-weight="700">' +
-					total +
-					'</text></svg>'
+					(cy - 2) +
+					'" text-anchor="middle" fill="#1b243f" font-size="30" font-weight="800">' +
+					pct +
+					'</text>' +
+					'<text x="' +
+					cx +
+					'" y="' +
+					(cy + 16) +
+					'" text-anchor="middle" fill="#7a829b" font-size="11" font-weight="600">HEALTH</text>' +
+					'</svg>'
 				);
 			}
 
-			function renderLegendActive() {
+			function buildTiles() {
+				const s = REPORT.summary;
+				const total = s.totalComponents;
+				const seo = REPORT.signals && REPORT.signals.seo;
+				const tiles = [
+					{ emoji: '🎨', label: 'Icons', have: s.withIcon, total, filter: 'no-icon' },
+					{ emoji: '🌈', label: 'Colors', have: s.withColor, total, filter: 'no-color' },
+					{
+						emoji: '📷',
+						label: 'Previews',
+						have: s.withPreview,
+						total,
+						filter: 'no-preview',
+					},
+					{
+						emoji: '🧩',
+						label: 'Presets',
+						have: s.withPreset,
+						total,
+						filter: 'no-preset',
+					},
+				];
+				if (seo && seo.totalStories) {
+					tiles.push({
+						emoji: '🔍',
+						label: 'SEO',
+						have: seo.withTitle,
+						total: seo.totalStories,
+						unit: 'stories',
+						filter: null,
+					});
+				}
+				return tiles.map(t => ({
+					...t,
+					pct: t.total ? Math.round((t.have / t.total) * 100) : 0,
+				}));
+			}
+
+			function renderTiles() {
+				const tiles = buildTiles().sort((a, b) => a.pct - b.pct);
+				document.getElementById('tiles').innerHTML = tiles
+					.map(t => {
+						const color = severity(t.pct);
+						const cls =
+							'tile' +
+							(t.filter ? '' : ' info') +
+							(t.filter && activeFilter === t.filter ? ' on' : '');
+						const unit = t.unit || 'components';
+						return (
+							'<div class="' +
+							cls +
+							'"' +
+							(t.filter ? ' data-filter="' + t.filter + '"' : '') +
+							' style="border-left-color:' +
+							color +
+							'">' +
+							'<div class="te">' +
+							t.emoji +
+							'</div>' +
+							'<div class="tl">' +
+							t.label +
+							'</div>' +
+							'<div class="tv">' +
+							t.have +
+							'/' +
+							t.total +
+							' ' +
+							unit +
+							' · ' +
+							t.pct +
+							'%</div>' +
+							'<div class="tbar"><span style="width:' +
+							t.pct +
+							'%;background:' +
+							color +
+							'"></span></div>' +
+							'</div>'
+						);
+					})
+					.join('');
 				document
-					.querySelectorAll('.leg .r')
-					.forEach(r =>
-						r.classList.toggle('active', r.getAttribute('data-filter') === activeFilter)
+					.querySelectorAll('#tiles .tile[data-filter]')
+					.forEach(el =>
+						el.addEventListener('click', () =>
+							setFilter(el.getAttribute('data-filter'))
+						)
 					);
+			}
+
+			function renderTilesActive() {
+				document
+					.querySelectorAll('#tiles .tile[data-filter]')
+					.forEach(el =>
+						el.classList.toggle('on', el.getAttribute('data-filter') === activeFilter)
+					);
+			}
+
+			function healthScore() {
+				const tiles = buildTiles();
+				if (!tiles.length) return 0;
+				return Math.round(tiles.reduce((sum, t) => sum + t.pct, 0) / tiles.length);
 			}
 
 			function renderTable() {
@@ -728,52 +892,11 @@ const iconSvg: Record<string, string> = {
 					)
 					.join('');
 
-				const segs = [
-					{ label: 'Page type', value: s.rolePage, color: RC.page, filter: 'role:page' },
-					{
-						label: 'Page section',
-						value: s.roleSection,
-						color: RC.section,
-						filter: 'role:section',
-					},
-					{
-						label: 'Subcomponent',
-						value: s.roleSubcomponent,
-						color: RC.subcomponent,
-						filter: 'role:subcomponent',
-					},
-					{
-						label: 'Unused',
-						value: s.roleUnused,
-						color: RC.unused,
-						filter: 'role:unused',
-					},
-				];
-				document.getElementById('donut').innerHTML = donut(segs, 160);
-				document.getElementById('leg').innerHTML = segs
-					.map(
-						seg =>
-							'<div class="r" data-filter="' +
-							seg.filter +
-							'"><span class="sw" style="background:' +
-							seg.color +
-							'"></span><b>' +
-							seg.value +
-							'</b> <span class="m">' +
-							seg.label +
-							'</span></div>'
-					)
-					.join('');
-				document
-					.querySelectorAll('#donut .slice, .leg .r')
-					.forEach(el =>
-						el.addEventListener('click', () =>
-							setFilter(el.getAttribute('data-filter'))
-						)
-					);
+				document.getElementById('score').innerHTML = ringGauge(healthScore(), 150);
+				renderTiles();
 
 				renderChips();
-				renderLegendActive();
+				renderTilesActive();
 
 				document.querySelectorAll('th[data-sort]').forEach(th => {
 					th.addEventListener('click', () => {

@@ -2,6 +2,7 @@ import type { APIRoute } from 'astro';
 
 import {
 	buildReport,
+	computeSeoSignal,
 	countComponentUsage,
 	fetchAllStories,
 	fetchComponentSchemas,
@@ -57,8 +58,9 @@ export const GET: APIRoute = async ({ url }) => {
 		const schemas = await fetchComponentSchemas(managementToken, spaceId);
 		const stories = await fetchAllStories(deliveryToken, contentVersion);
 		const usage = countComponentUsage(stories);
+		const signals = { seo: computeSeoSignal(stories) };
 
-		const report = buildReport(schemas, usage, {
+		const report = buildReport(schemas, usage, signals, {
 			spaceId,
 			contentVersion,
 			storiesAnalysed: stories.length,
