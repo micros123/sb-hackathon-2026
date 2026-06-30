@@ -1,6 +1,88 @@
-# sb-hackathon-2026
+# LightBlok — get the most out of Storyblok
 
-Claude Code skills and configuration for the TomTom frontend monorepo.
+> **Storyblok × AWS Hackathon 2026 · Team TomTom**
+
+**LightBlok is a Lighthouse-style audit for a Storyblok space, plus AI autofixes.** It scores
+how much of Storyblok's component-UX you actually use — the icons, colors, preview images,
+presets and SEO that teams skip under deadline — and then fixes the gaps live.
+
+The loop is the whole product:
+
+**Detect → Suggest → Approve → Apply → Re-measure**
+
+- **Detect** — a deterministic, reproducible audit of the space (no AI, same result every run).
+- **Suggest** — AI proposes the fix as a concrete change.
+- **Approve** — a human gate (governance; "apply all" is available for the demo).
+- **Apply** — written back **live** through the **Storyblok MCP Server** (and a **Storyblok FlowMotion** webhook for screenshots).
+- **Re-measure** — the coverage score climbs after the fixes land.
+
+## 1. The audit dashboard (`packages/apps/astoria`)
+
+An Astro SSR app that turns the raw space into a single, scannable view.
+
+- **Route:** `/space-health` (the LightBlok dashboard). Loads a committed snapshot
+  (`public/space-health.json`) by default, or refreshes **live** from Storyblok via
+  `GET /api/space-health`.
+- **Audit engine:** `src/utils/spaceHealth.ts` — deterministic. Reads every component schema
+  (Management API) and walks every story's content (Delivery API) to compute usage.
+- **Setup coverage** — one headline % = the mean of four categories, each grounded in real signals:
+
+  | Category | Built from |
+  | --- | --- |
+  | **Schema** | per-component `icon` 🎨, `color` 🌈, preview image 📷, presets 🧩 |
+  | **Content** | adoption — share of components actually used in content |
+  | **SEO** | per-story meta `title` / `description` 🔍 |
+  | **Hygiene** | components scoped correctly (not "allowed everywhere") + unused cleanup |
+
+  Color-coded as opportunity (≥80 well configured · 40–79 room to grow · <40 lots of upside),
+  not a pass/fail health verdict.
+- **Quick-win tiles** — each gap is an actionable tile with a **Fix** button that opens the
+  detect → suggest → approve → apply wizard. The **Previews** fix is live end-to-end: it calls
+  a Storyblok **FlowMotion** webhook (`/api/screenshot?componentName=…`) that screenshots the
+  component and writes the preview image back.
+- Snapshot in this repo: **340 components, 3,712 stories** (space `178460`).
+
+**Run it:**
+
+```bash
+cd packages/apps/astoria
+pnpm install
+pnpm dev            # http://localhost:3000/space-health  (static snapshot, no token needed)
+# live mode + autofix need: PUBLIC_STORYBLOK_ACCESS_TOKEN, SPACE_HEALTH_TOKEN, SPACE_HEALTH_SPACE_ID
+# screenshot webhook is overridable via SCREENSHOT_WEBHOOK_URL
+```
+
+Deploys to **Netlify** out of the box (`netlify.toml`); the Astro adapter is env-conditional
+(`DEPLOY_TARGET=netlify` → serverless, otherwise the standalone Node server for local/Docker).
+
+## 2. The autofixes (Claude Code skills, write back via the Storyblok MCP Server)
+
+The **Apply** step lives as three Claude Code skills under `.claude/skills/` that write to the
+space through the official **Storyblok MCP Server** (`mcp__storyblok__execute*`, `upload_asset`).
+This is the **MCP Innovation** angle: a developer tool built on the Storyblok MCP Server that
+turns audit findings into live config changes. Three live recordings are in
+`packages/apps/astoria/public/` (`component-{screenshots,icons,colors}-skill.mp4`).
+
+## Judging & prizes
+
+- **MCP Innovation** — autofixes apply live via the Storyblok MCP Server `execute` tools.
+- **FlowMotion** — the component-screenshot autofix runs as a Storyblok FlowMotion workflow,
+  triggered from the dashboard.
+- Maps to all four criteria: deterministic audit + AI fixes (**Innovation**), live MCP/FlowMotion
+  write-back + headless screenshots (**Execution**), built natively on Storyblok APIs/MCP/FlowMotion
+  (**Use of Storyblok**), one-click quick-win tiles (**Ease of Use**).
+
+## Repo layout
+
+| Path | What |
+| --- | --- |
+| `packages/apps/astoria/` | the LightBlok dashboard + deterministic audit engine |
+| `packages/apps/astoria/src/utils/spaceHealth.ts` | the audit (detect) engine |
+| `packages/apps/astoria/src/pages/space-health.astro` | the dashboard UI |
+| `packages/apps/astoria/src/pages/api/` | `space-health` (live audit) + `screenshot` (FlowMotion proxy) |
+| `.claude/skills/component-*` | the apply skills (icons / colors / screenshots) |
+
+---
 
 ## Component-library skills
 
