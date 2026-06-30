@@ -678,7 +678,20 @@ const iconSvg: Record<string, string> = {
 	</head>
 	<body>
 		<div class="bar">
-			<h1><span class="logo">L</span> LightBlok</h1>
+			<h1>
+				<span class="logo"
+					><svg
+						viewBox="0 0 24 24"
+						width="18"
+						height="18"
+						fill="#06231f"
+						aria-hidden="true"
+						><path
+							d="M8 10V8h1V4H8V3l4-2l4 2v1h-1v4h1v2h-1.26l-6.3 3.64L9 10zm5-2V4h-2v4zM7 23l.04-.24l9.11-5.26l.52 3.38L13 23zm1.05-6.83L15.31 12l.52 3.37l-8.4 4.85z"
+						></path></svg
+					></span
+				> LightBlok
+			</h1>
 			<p class="tagline">Storyblok UX optimization — get the most out of Storyblok</p>
 			<p id="subtitle">Loading component insights…</p>
 			<div class="sourcebar">
@@ -842,7 +855,7 @@ const iconSvg: Record<string, string> = {
 				{
 					id: 'used',
 					emoji: '🗑️',
-					label: 'In use',
+					label: 'Unused',
 					cat: 'Hygiene',
 					bad: c => c.totalUsage === 0,
 					filter: 'unused',
@@ -908,6 +921,25 @@ const iconSvg: Record<string, string> = {
 					: pct >= 40
 						? 'Room to grow'
 						: 'Lots of upside';
+			}
+
+			// LightBlok lighthouse mark (Material Design Icons, Apache-2.0) — used as the
+			// on-brand tile badge so each quick win reads as part of the same audit.
+			const LIGHTHOUSE_PATH =
+				'M8 10V8h1V4H8V3l4-2l4 2v1h-1v4h1v2h-1.26l-6.3 3.64L9 10zm5-2V4h-2v4zM7 23l.04-.24l9.11-5.26l.52 3.38L13 23zm1.05-6.83L15.31 12l.52 3.37l-8.4 4.85z';
+
+			function lighthouse(color, px) {
+				return (
+					'<svg viewBox="0 0 24 24" width="' +
+					px +
+					'" height="' +
+					px +
+					'" fill="' +
+					color +
+					'"><path d="' +
+					LIGHTHOUSE_PATH +
+					'"/></svg>'
+				);
 			}
 
 			function isLight(hex) {
@@ -1227,7 +1259,7 @@ const iconSvg: Record<string, string> = {
 							'<span class="emoji" style="background:' +
 							tint +
 							'">' +
-							t.emoji +
+							lighthouse(color, 26) +
 							'</span>' +
 							'<span class="title">' +
 							t.label +
