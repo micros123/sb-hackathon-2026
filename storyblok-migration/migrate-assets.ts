@@ -61,26 +61,32 @@ type AssetSignResponse = {
 	filename: string
 }
 
-async function mapiGet(token: string, url: string): Promise<Response> {
-	const res = await fetch(url, { headers: { Authorization: token } })
-	if (res.status === 429) {
-		await delay(2000)
-		return mapiGet(token, url)
+async function mapiGet(token: string, url: string, attempt = 0): Promise<Response> {
+	try {
+		const res = await fetch(url, { headers: { Authorization: token } })
+		if (res.status === 429) { await delay(2000); return mapiGet(token, url, attempt) }
+		return res
+	} catch (err) {
+		if (attempt >= 4) throw err
+		await delay(3000 * (attempt + 1))
+		return mapiGet(token, url, attempt + 1)
 	}
-	return res
 }
 
-async function mapiPut(token: string, url: string, body: unknown): Promise<Response> {
-	const res = await fetch(url, {
-		method: 'PUT',
-		headers: { Authorization: token, 'Content-Type': 'application/json' },
-		body: JSON.stringify(body),
-	})
-	if (res.status === 429) {
-		await delay(2000)
-		return mapiPut(token, url, body)
+async function mapiPut(token: string, url: string, body: unknown, attempt = 0): Promise<Response> {
+	try {
+		const res = await fetch(url, {
+			method: 'PUT',
+			headers: { Authorization: token, 'Content-Type': 'application/json' },
+			body: JSON.stringify(body),
+		})
+		if (res.status === 429) { await delay(2000); return mapiPut(token, url, body, attempt) }
+		return res
+	} catch (err) {
+		if (attempt >= 4) throw err
+		await delay(3000 * (attempt + 1))
+		return mapiPut(token, url, body, attempt + 1)
 	}
-	return res
 }
 
 async function listAllStories(prefix: string): Promise<StoryMeta[]> {
@@ -252,7 +258,14 @@ async function main() {
 		const meta = contentStories[i]
 
 		// Fetch full content
-		const res = await mapiGet(TARGET_TOKEN, `${MAPI}/${TARGET_SPACE}/stories/${meta.id}`)
+		let res: Response
+		try {
+			res = await mapiGet(TARGET_TOKEN, `${MAPI}/${TARGET_SPACE}/stories/${meta.id}`)
+		} catch (err) {
+			console.log(`  ✗ fetch network error ${meta.full_slug}: ${err}`)
+			storiesFailed++
+			continue
+		}
 		if (!res.ok) {
 			storiesFailed++
 			continue
@@ -316,18 +329,23 @@ async function main() {
 		const updatedContent = replaceUrls(story.content, urlMap)
 		const patchedContent = patchEmptyRichtextFields(updatedContent)
 
-		const updateRes = await mapiPut(TARGET_TOKEN, `${MAPI}/${TARGET_SPACE}/stories/${story.id}`, {
-			story: { content: patchedContent },
-			publish: false,
-			force_update: 1,
-		})
-		await delay(200)
+		try {
+			const updateRes = await mapiPut(TARGET_TOKEN, `${MAPI}/${TARGET_SPACE}/stories/${story.id}`, {
+				story: { content: patchedContent },
+				publish: false,
+				force_update: 1,
+			})
+			await delay(200)
 
-		if (updateRes.ok) {
-			storiesUpdated++
-		} else {
-			const errText = await updateRes.text()
-			console.log(`  ✗ update failed ${story.full_slug}: ${updateRes.status} ${errText.slice(0, 100)}`)
+			if (updateRes.ok) {
+				storiesUpdated++
+			} else {
+				const errText = await updateRes.text()
+				console.log(`  ✗ update failed ${story.full_slug}: ${updateRes.status} ${errText.slice(0, 100)}`)
+				storiesFailed++
+			}
+		} catch (err) {
+			console.log(`  ✗ update network error ${story.full_slug}: ${err}`)
 			storiesFailed++
 		}
 
