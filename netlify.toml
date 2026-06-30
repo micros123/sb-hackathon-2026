@@ -14,3 +14,10 @@
   NODE_VERSION = "24"
   DEPLOY_TARGET = "netlify"
   MODE = "production"
+
+# Keep this hackathon preview out of all search engines, on every response
+# (static assets and SSR function output alike).
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, nofollow"
