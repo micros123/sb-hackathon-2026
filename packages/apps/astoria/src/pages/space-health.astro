@@ -177,6 +177,11 @@ const iconSvg: Record<string, string> = {
 				gap: 16px;
 				align-items: start;
 			}
+			.side {
+				display: flex;
+				flex-direction: column;
+				gap: 16px;
+			}
 			@media (max-width: 880px) {
 				.panels {
 					grid-template-columns: 1fr;
@@ -273,7 +278,7 @@ const iconSvg: Record<string, string> = {
 				outline: 2px solid var(--teal);
 			}
 			.tile .te {
-				font-size: 20px;
+				font-size: 30px;
 				line-height: 1;
 			}
 			.tile .tl {
@@ -434,13 +439,21 @@ const iconSvg: Record<string, string> = {
 			<div id="dashboard" style="display: none">
 				<div class="cards" id="cards"></div>
 				<div class="panels">
-					<div class="panel">
-						<h2>Space health</h2>
-						<div class="scorewrap"><div id="score"></div></div>
-						<p class="tileshint">
-							Quick wins — click a tile to see the components that need it.
-						</p>
-						<div class="tiles" id="tiles"></div>
+					<div class="side">
+						<div class="panel">
+							<h2>Space health</h2>
+							<div class="scorewrap"><div id="score"></div></div>
+							<p class="tileshint">
+								Quick wins — click a tile to see the components that need it.
+							</p>
+							<div class="tiles" id="tiles"></div>
+						</div>
+						<div class="panel">
+							<h2>Component role</h2>
+							<div class="donutwrap">
+								<div id="donut"></div><div class="leg" id="leg"></div>
+							</div>
+						</div>
 					</div>
 					<div class="panel">
 						<h2>Components</h2>
@@ -695,6 +708,61 @@ const iconSvg: Record<string, string> = {
 				);
 			}
 
+			function donut(segments, size) {
+				const total = segments.reduce((sum, s) => sum + s.value, 0) || 1;
+				const cx = size / 2;
+				const cy = size / 2;
+				const radius = size / 2 - 2;
+				let angle = -Math.PI / 2;
+				const paths = segments
+					.filter(s => s.value > 0)
+					.map(s => {
+						const start = angle;
+						const end = angle + (s.value / total) * Math.PI * 2;
+						angle = end;
+						return (
+							'<path class="slice" data-filter="' +
+							s.filter +
+							'" style="cursor:pointer" d="' +
+							arcPath(cx, cy, radius, start, end - 0.004) +
+							'" fill="' +
+							s.color +
+							'"><title>' +
+							s.label +
+							': ' +
+							s.value +
+							'</title></path>'
+						);
+					})
+					.join('');
+				return (
+					'<svg width="' +
+					size +
+					'" height="' +
+					size +
+					'" viewBox="0 0 ' +
+					size +
+					' ' +
+					size +
+					'">' +
+					paths +
+					'<circle cx="' +
+					cx +
+					'" cy="' +
+					cy +
+					'" r="' +
+					radius * 0.58 +
+					'" fill="#fff"></circle>' +
+					'<text x="' +
+					cx +
+					'" y="' +
+					(cy + 6) +
+					'" text-anchor="middle" fill="#1b243f" font-size="22" font-weight="700">' +
+					total +
+					'</text></svg>'
+				);
+			}
+
 			function buildTiles() {
 				const s = REPORT.summary;
 				const total = s.totalComponents;
@@ -789,6 +857,58 @@ const iconSvg: Record<string, string> = {
 					.querySelectorAll('#tiles .tile[data-filter]')
 					.forEach(el =>
 						el.classList.toggle('on', el.getAttribute('data-filter') === activeFilter)
+					);
+				document
+					.querySelectorAll('.leg .r')
+					.forEach(r =>
+						r.classList.toggle('active', r.getAttribute('data-filter') === activeFilter)
+					);
+			}
+
+			function renderRoleDonut() {
+				const s = REPORT.summary;
+				const segs = [
+					{ label: 'Page type', value: s.rolePage, color: RC.page, filter: 'role:page' },
+					{
+						label: 'Page section',
+						value: s.roleSection,
+						color: RC.section,
+						filter: 'role:section',
+					},
+					{
+						label: 'Subcomponent',
+						value: s.roleSubcomponent,
+						color: RC.subcomponent,
+						filter: 'role:subcomponent',
+					},
+					{
+						label: 'Unused',
+						value: s.roleUnused,
+						color: RC.unused,
+						filter: 'role:unused',
+					},
+				];
+				document.getElementById('donut').innerHTML = donut(segs, 150);
+				document.getElementById('leg').innerHTML = segs
+					.map(
+						seg =>
+							'<div class="r" data-filter="' +
+							seg.filter +
+							'"><span class="sw" style="background:' +
+							seg.color +
+							'"></span><b>' +
+							seg.value +
+							'</b> <span class="m">' +
+							seg.label +
+							'</span></div>'
+					)
+					.join('');
+				document
+					.querySelectorAll('#donut .slice, .leg .r')
+					.forEach(el =>
+						el.addEventListener('click', () =>
+							setFilter(el.getAttribute('data-filter'))
+						)
 					);
 			}
 
@@ -894,6 +1014,7 @@ const iconSvg: Record<string, string> = {
 
 				document.getElementById('score').innerHTML = ringGauge(healthScore(), 150);
 				renderTiles();
+				renderRoleDonut();
 
 				renderChips();
 				renderTilesActive();
