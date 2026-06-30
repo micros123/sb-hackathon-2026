@@ -67,7 +67,12 @@ turns audit findings into live config changes. Three live recordings are in
 
 - **MCP Innovation** — autofixes apply live via the Storyblok MCP Server `execute` tools.
 - **FlowMotion** — the component-screenshot autofix runs as a Storyblok FlowMotion workflow,
-  triggered from the dashboard.
+  triggered from the dashboard. Workflows:
+  - Screenshot a single component (**working**, wired into the dashboard's Previews fix) — <https://c3rvcnlibg9rlwvsaxrllxbyzc1ldwmx.flowmotion.storyblok.com/workflow/N9JbB0HISbQHf5Be>
+  - Screenshot all components (**in progress**) — <https://c3rvcnlibg9rlwvsaxrllxbyzc1ldwmx.flowmotion.storyblok.com/workflow/l20unY3t7s_WsFnMy_Coc>
+
+  The dashboard calls the single-component workflow's production webhook
+  (`/webhook/screenshot-single-component`, overridable via `SCREENSHOT_WEBHOOK_URL`).
 - Maps to all four criteria: deterministic audit + AI fixes (**Innovation**), live MCP/FlowMotion
   write-back + headless screenshots (**Execution**), built natively on Storyblok APIs/MCP/FlowMotion
   (**Use of Storyblok**), one-click quick-win tiles (**Ease of Use**).
