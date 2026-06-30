@@ -63,289 +63,274 @@ const iconSvg: Record<string, string> = {
 		<title>Storyblok space health</title>
 		<style is:global>
 			:root {
-				--bg: #0e1016;
-				--panel: #161922;
-				--panel-2: #1e222e;
-				--line: #2a2f3d;
-				--text: #e7e9ef;
-				--muted: #98a0b0;
-				--accent: #09b3af;
-				--role-page: #09b3af;
-				--role-section: #4caf7d;
-				--role-subcomponent: #f0a020;
-				--role-unused: #e2526b;
-				--type-page: #09b3af;
-				--type-nested: #f0a020;
-				--type-universal: #7e8cff;
-				--type-unclassified: #6b7280;
-				--good: #4caf7d;
-				--bad: #e2526b;
+				--ink: #1b243f;
+				--teal: #09b3af;
+				--green: #4caf7d;
+				--amber: #f0a020;
+				--red: #e2526b;
+				--bg: #f3f5fb;
+				--card: #ffffff;
+				--line: #e6e9f2;
+				--muted: #7a829b;
 			}
 			* {
 				box-sizing: border-box;
 			}
 			body {
 				margin: 0;
-				font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-				background: radial-gradient(1200px 600px at 70% -10%, #18223a 0%, var(--bg) 55%);
-				color: var(--text);
-				padding: 32px;
-				min-height: 100vh;
+				background: var(--bg);
+				color: var(--ink);
+				font-family:
+					ui-sans-serif,
+					system-ui,
+					-apple-system,
+					'Segoe UI',
+					Roboto,
+					sans-serif;
 			}
-			h1 {
+			.bar {
+				background: linear-gradient(100deg, var(--ink), #2a3556);
+				color: #fff;
+				padding: 26px 32px;
+			}
+			.bar h1 {
+				margin: 0;
 				font-size: 24px;
-				margin: 0 0 4px;
-				letter-spacing: -0.3px;
-			}
-			.sub {
-				color: var(--muted);
-				font-size: 13px;
-				margin-bottom: 18px;
-			}
-			.sourcebar {
-				display: flex;
-				gap: 10px;
-				align-items: center;
-				margin-bottom: 24px;
-				flex-wrap: wrap;
-			}
-			button {
-				background: var(--panel-2);
-				border: 1px solid var(--line);
-				color: var(--text);
-				border-radius: 8px;
-				padding: 8px 12px;
-				font-size: 13px;
-				cursor: pointer;
-				transition: border-color 0.15s;
-			}
-			button:hover {
-				border-color: var(--accent);
-			}
-			.state {
-				color: var(--muted);
-				font-size: 14px;
-				padding: 40px 0;
-			}
-			.state.error {
-				color: var(--bad);
-			}
-			.cards {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-				gap: 12px;
-				margin-bottom: 24px;
-			}
-			.card {
-				background: var(--panel);
-				border: 1px solid var(--line);
-				border-radius: 12px;
-				padding: 16px;
-			}
-			.card .num {
-				font-size: 26px;
-				font-weight: 700;
-			}
-			.card .lbl {
-				color: var(--muted);
-				font-size: 11px;
-				text-transform: uppercase;
-				letter-spacing: 0.5px;
-				margin-top: 4px;
-			}
-			.charts {
-				display: grid;
-				grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-				gap: 16px;
-				margin-bottom: 24px;
-			}
-			.panel {
-				background: var(--panel);
-				border: 1px solid var(--line);
-				border-radius: 12px;
-				padding: 18px;
-			}
-			.panel h2 {
-				font-size: 13px;
-				margin: 0 0 14px;
-				text-transform: uppercase;
-				letter-spacing: 0.5px;
-				color: var(--muted);
-			}
-			.chart {
-				display: flex;
-				gap: 16px;
-				align-items: center;
-			}
-			.slice {
-				cursor: pointer;
-				transition: opacity 0.15s;
-			}
-			.slice:hover {
-				opacity: 0.82;
-			}
-			.legend {
-				display: flex;
-				flex-direction: column;
-				gap: 6px;
-				font-size: 12.5px;
-				flex: 1;
-			}
-			.legend .item {
-				display: flex;
-				align-items: center;
-				gap: 8px;
-				cursor: pointer;
-				padding: 3px 6px;
-				border-radius: 6px;
-			}
-			.legend .item:hover {
-				background: var(--panel-2);
-			}
-			.legend .item.active {
-				background: var(--panel-2);
-				outline: 1px solid var(--accent);
-			}
-			.legend .swatch {
-				width: 11px;
-				height: 11px;
-				border-radius: 3px;
-				flex: 0 0 auto;
-			}
-			.legend .count {
-				color: var(--muted);
-				margin-left: auto;
-				font-variant-numeric: tabular-nums;
-			}
-			.controls {
-				display: flex;
-				gap: 8px;
-				align-items: center;
-				margin-bottom: 12px;
-				flex-wrap: wrap;
-			}
-			.chip {
-				background: var(--panel-2);
-				border: 1px solid #3a4150;
-				color: var(--text);
-				border-radius: 8px;
-				padding: 8px 14px;
-				font-size: 13px;
-				font-weight: 500;
-				cursor: pointer;
-				box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
-			}
-			.chip:hover {
-				color: var(--text);
-			}
-			.chip.active {
-				background: var(--accent);
-				border-color: var(--accent);
-				color: #06231f;
-				font-weight: 600;
-			}
-			input[type='search'] {
-				background: var(--panel-2);
-				border: 1px solid var(--line);
-				color: var(--text);
-				border-radius: 8px;
-				padding: 8px 10px;
-				font-size: 13px;
-				flex: 1;
-				min-width: 200px;
-			}
-			table {
-				width: 100%;
-				border-collapse: collapse;
-				font-size: 15px;
-			}
-			th,
-			td {
-				text-align: left;
-				padding: 8px 10px;
-				border-bottom: 1px solid var(--line);
-			}
-			th {
-				color: var(--text);
-				font-weight: 600;
-				font-size: 13px;
-				cursor: pointer;
-				user-select: none;
-				white-space: nowrap;
-			}
-			th.num,
-			td.num {
-				text-align: left;
-				font-variant-numeric: tabular-nums;
-			}
-			tbody tr:hover {
-				background: var(--panel-2);
-			}
-			.name-cell {
+				font-weight: 800;
+				letter-spacing: -0.4px;
 				display: flex;
 				align-items: center;
 				gap: 10px;
 			}
-			.icon-badge {
-				width: 34px;
-				height: 34px;
-				border-radius: 6px;
+			.bar .logo {
+				width: 28px;
+				height: 28px;
+				border-radius: 8px;
+				background: var(--teal);
 				display: inline-flex;
 				align-items: center;
 				justify-content: center;
+				font-weight: 900;
+				color: #06231f;
+			}
+			.bar p {
+				margin: 6px 0 0;
+				color: #b9c0d6;
+				font-size: 14px;
+			}
+			.bar .sourcebar {
+				margin-top: 14px;
+				display: flex;
+				gap: 8px;
+				flex-wrap: wrap;
+			}
+			.bar button {
+				background: rgba(255, 255, 255, 0.1);
+				border: 1px solid rgba(255, 255, 255, 0.2);
+				color: #fff;
+				border-radius: 8px;
+				padding: 7px 13px;
+				font: inherit;
 				font-size: 13px;
-				flex: 0 0 auto;
-				border: 1px solid rgba(255, 255, 255, 0.12);
+				cursor: pointer;
 			}
-			.icon-badge.empty {
-				background: var(--panel-2);
-				color: #4b5263;
+			.bar button:hover {
+				background: rgba(255, 255, 255, 0.18);
 			}
-			.color-cell {
+			.wrap {
+				max-width: 1180px;
+				margin: -18px auto 48px;
+				padding: 0 24px;
+			}
+			.state {
+				color: var(--muted);
+				padding: 30px 4px;
+			}
+			.state.error {
+				color: var(--red);
+			}
+			.cards {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+				gap: 14px;
+				margin-bottom: 20px;
+			}
+			.card {
+				background: var(--card);
+				border-radius: 16px;
+				padding: 18px;
+				box-shadow: 0 6px 20px rgba(27, 36, 63, 0.06);
+			}
+			.card .num {
+				font-size: 30px;
+				font-weight: 800;
+			}
+			.card .lbl {
+				font-size: 12px;
+				color: var(--muted);
+				margin-top: 4px;
+				font-weight: 600;
+			}
+			.panels {
+				display: grid;
+				grid-template-columns: 340px 1fr;
+				gap: 16px;
+				align-items: start;
+			}
+			@media (max-width: 880px) {
+				.panels {
+					grid-template-columns: 1fr;
+				}
+			}
+			.panel {
+				background: var(--card);
+				border-radius: 16px;
+				padding: 20px;
+				box-shadow: 0 6px 20px rgba(27, 36, 63, 0.06);
+			}
+			.panel h2 {
+				font-size: 13px;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+				color: var(--muted);
+				margin: 0 0 16px;
+			}
+			.donutwrap {
 				display: flex;
 				align-items: center;
-				gap: 7px;
+				gap: 18px;
 			}
-			.color-swatch {
-				width: 16px;
-				display: inline-block;
-				vertical-align: middle;
-				height: 16px;
+			.leg {
+				display: flex;
+				flex-direction: column;
+				gap: 9px;
+				font-size: 13px;
+				flex: 1;
+			}
+			.leg .r {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				cursor: pointer;
+				padding: 3px 5px;
+				border-radius: 7px;
+			}
+			.leg .r:hover {
+				background: #f3f5fb;
+			}
+			.leg .r.active {
+				background: #eaf6f5;
+				outline: 1px solid var(--teal);
+			}
+			.leg .sw {
+				width: 12px;
+				height: 12px;
 				border-radius: 4px;
-				border: 1px solid rgba(255, 255, 255, 0.15);
 				flex: 0 0 auto;
 			}
-			.color-hex {
-				color: var(--muted);
-				font-size: 11.5px;
+			.leg b {
 				font-variant-numeric: tabular-nums;
 			}
-			.muted-dash {
-				color: #4b5263;
+			.leg .m {
+				color: var(--muted);
 			}
-			.tag {
-				display: inline-block;
-				padding: 2px 8px;
-				border-radius: 20px;
-				font-size: 11px;
+			.chips {
+				display: flex;
+				gap: 8px;
+				flex-wrap: wrap;
+				margin-bottom: 14px;
+			}
+			.chips button {
+				border: none;
+				background: #eef0f7;
+				color: var(--ink);
+				border-radius: 999px;
+				padding: 9px 16px;
+				font: inherit;
+				font-size: 13px;
 				font-weight: 600;
+				cursor: pointer;
+			}
+			.chips button:hover {
+				background: #e3e7f2;
+			}
+			.chips button.on {
+				background: var(--teal);
+				color: #06231f;
+			}
+			.tablewrap {
+				max-height: 620px;
+				overflow: auto;
+			}
+			table {
+				width: 100%;
+				border-collapse: separate;
+				border-spacing: 0;
+				font-size: 14px;
+			}
+			th {
+				text-align: left;
+				color: var(--muted);
+				font-size: 12px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				padding: 10px 12px;
+				cursor: pointer;
+				user-select: none;
+				white-space: nowrap;
+				position: sticky;
+				top: 0;
+				background: var(--card);
+			}
+			td {
+				padding: 11px 12px;
+				border-top: 1px solid var(--line);
+				vertical-align: middle;
+			}
+			tbody tr:hover td {
+				background: #f7f9ff;
+			}
+			.comp {
+				font-weight: 700;
+			}
+			.num {
+				text-align: left;
+				font-variant-numeric: tabular-nums;
+				font-weight: 600;
+			}
+			.zero {
+				color: var(--red);
+			}
+			.pill {
+				display: inline-block;
+				padding: 3px 10px;
+				border-radius: 999px;
+				font-size: 12px;
+				font-weight: 700;
 				text-transform: capitalize;
 			}
-			.tag.page {
-				background: rgba(9, 179, 175, 0.16);
-				color: var(--role-page);
+			.icon-badge {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 34px;
+				height: 34px;
+				border-radius: 8px;
+				flex: 0 0 auto;
 			}
-			.tag.section {
-				background: rgba(76, 175, 125, 0.16);
-				color: var(--role-section);
+			.icon-badge.empty {
+				background: #eef0f7;
 			}
-			.tag.subcomponent {
-				background: rgba(240, 160, 32, 0.16);
-				color: var(--role-subcomponent);
+			.color-swatch {
+				display: inline-block;
+				width: 16px;
+				height: 16px;
+				border-radius: 4px;
+				border: 1px solid rgba(0, 0, 0, 0.12);
+				vertical-align: middle;
 			}
-			.tag.unused {
-				background: rgba(226, 82, 107, 0.16);
-				color: var(--role-unused);
+			.muted-dash {
+				color: #b6bccb;
 			}
 			.dot {
 				display: inline-block;
@@ -353,83 +338,76 @@ const iconSvg: Record<string, string> = {
 				height: 9px;
 				border-radius: 50%;
 			}
-			.dot.yes {
-				background: var(--good);
-			}
-			.dot.no {
-				background: #3a3f4d;
-			}
-			.zero {
-				color: var(--bad);
-			}
 			.rowcount {
 				color: var(--muted);
 				font-size: 12px;
-				margin-left: auto;
+				margin: 0 0 10px;
+			}
+			.search {
+				background: #f3f5fb;
+				border: 1px solid var(--line);
+				color: var(--ink);
+				border-radius: 10px;
+				padding: 9px 12px;
+				font: inherit;
+				font-size: 13px;
+				width: 100%;
+				margin-bottom: 12px;
 			}
 		</style>
 	</head>
 	<body>
-		<h1>Storyblok space health</h1>
-		<div class="sub" id="subtitle">Loading...</div>
-		<div class="sourcebar">
-			<button id="btn-static">Static snapshot</button>
-			<button id="btn-live">Refresh live from Storyblok</button>
-		</div>
-		<div class="state" id="state">Loading component insights...</div>
-		<div id="dashboard" style="display: none">
-			<div class="cards" id="cards"></div>
-			<div class="charts">
-				<div class="panel">
-					<h2>Component role</h2>
-					<div class="chart">
-						<div id="pie-role"></div><div class="legend" id="legend-role"></div>
-					</div>
-				</div>
-				<div class="panel">
-					<h2>Schema type</h2>
-					<div class="chart">
-						<div id="pie-type"></div><div class="legend" id="legend-type"></div>
-					</div>
-				</div>
-				<div class="panel">
-					<h2>Usage</h2>
-					<div class="chart">
-						<div id="pie-usage"></div><div class="legend" id="legend-usage"></div>
-					</div>
-				</div>
-				<div class="panel">
-					<h2>Styling completeness</h2>
-					<div class="chart">
-						<div id="pie-styling"></div><div class="legend" id="legend-styling"></div>
-					</div>
-				</div>
+		<div class="bar">
+			<h1><span class="logo">S</span> Space health</h1>
+			<p id="subtitle">Loading component insights…</p>
+			<div class="sourcebar">
+				<button id="btn-static">Static snapshot</button>
+				<button id="btn-live">Refresh live from Storyblok</button>
 			</div>
-			<div class="panel">
-				<h2>Components</h2>
-				<div class="controls" id="chips"></div>
-				<div class="controls">
-					<input type="search" id="search" placeholder="Filter by name..." />
-					<span class="rowcount" id="rowcount"></span>
+		</div>
+		<div class="wrap">
+			<div class="state" id="state">Loading…</div>
+			<div id="dashboard" style="display: none">
+				<div class="cards" id="cards"></div>
+				<div class="panels">
+					<div class="panel">
+						<h2>Component role</h2>
+						<div class="donutwrap">
+							<div id="donut"></div><div class="leg" id="leg"></div>
+						</div>
+					</div>
+					<div class="panel">
+						<h2>Components</h2>
+						<div class="chips" id="chips"></div>
+						<input
+							type="search"
+							class="search"
+							id="search"
+							placeholder="Filter by name…"
+						/>
+						<div class="rowcount" id="rowcount"></div>
+						<div class="tablewrap">
+							<table>
+								<thead>
+									<tr>
+										<th data-sort="name">Component</th>
+										<th data-sort="role">Role</th>
+										<th data-sort="classification">Type</th>
+										<th class="num" data-sort="pageSectionUsage">In page</th>
+										<th class="num" data-sort="totalUsage">Total</th>
+										<th class="num" data-sort="nestedUsage">Nested</th>
+										<th class="num" data-sort="storyCount">Stories</th>
+										<th data-sort="icon">Icon</th>
+										<th data-sort="color">Color</th>
+										<th>Preview</th>
+										<th>Preset</th>
+									</tr>
+								</thead>
+								<tbody id="rows"></tbody>
+							</table>
+						</div>
+					</div>
 				</div>
-				<table>
-					<thead>
-						<tr>
-							<th data-sort="name">Component</th>
-							<th data-sort="role">Role</th>
-							<th data-sort="classification">Type</th>
-							<th class="num" data-sort="pageSectionUsage">In page</th>
-							<th class="num" data-sort="totalUsage">Total</th>
-							<th class="num" data-sort="nestedUsage">Nested</th>
-							<th class="num" data-sort="storyCount">Stories</th>
-							<th data-sort="icon">Icon</th>
-							<th data-sort="color">Color</th>
-							<th>Preview</th>
-							<th>Preset</th>
-						</tr>
-					</thead>
-					<tbody id="rows"></tbody>
-				</table>
 			</div>
 		</div>
 
@@ -440,9 +418,15 @@ const iconSvg: Record<string, string> = {
 			let sortDir = -1;
 
 			const ICON_SVG = iconSvg;
+			const RC = {
+				page: '#09b3af',
+				section: '#4caf7d',
+				subcomponent: '#f0a020',
+				unused: '#e2526b',
+			};
 
 			const CHIPS = [
-				{ id: 'in-page', label: 'In page components' },
+				{ id: 'in-page', label: 'In page' },
 				{ id: 'all', label: 'All' },
 				{ id: 'role:page', label: 'Page' },
 				{ id: 'role:section', label: 'Section' },
@@ -468,8 +452,6 @@ const iconSvg: Record<string, string> = {
 				if (mode === 'no-color') return !c.hasColor;
 				if (mode === 'no-preview') return !c.hasPreview;
 				if (mode.startsWith('role:')) return c.role === mode.slice(5);
-				if (mode.startsWith('type:')) return c.classification === mode.slice(5);
-				if (mode.startsWith('styling:')) return c.styling === mode.slice(8);
 				return true;
 			}
 
@@ -496,26 +478,21 @@ const iconSvg: Record<string, string> = {
 				return (
 					'<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="' +
 					color +
-					'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:' +
-					color +
-					'">' +
+					'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
 					body +
 					'</svg>'
 				);
 			}
 
 			function iconBadge(c) {
-				if (!c.icon && !c.color) {
-					return '<span class="icon-badge empty" title="no icon, no color">·</span>';
-				}
-				const bg = c.color && /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : '#3a3f4d';
+				if (!c.icon && !c.color) return '<span class="icon-badge empty"></span>';
+				const bg = c.color && /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : '#eef0f7';
 				const fg = isLight(bg) ? '#10131a' : '#ffffff';
-				const title = (c.icon || 'no icon') + (c.color ? ' · ' + c.color : '');
 				return (
 					'<span class="icon-badge" style="background:' +
 					bg +
 					'" title="' +
-					escapeHtml(title) +
+					escapeHtml((c.icon || 'no icon') + (c.color ? ' · ' + c.color : '')) +
 					'">' +
 					(c.icon ? iconGlyph(c.icon, fg) : '') +
 					'</span>'
@@ -525,12 +502,12 @@ const iconSvg: Record<string, string> = {
 			function colorCell(c) {
 				if (!c.color) return '<span class="muted-dash">—</span>';
 				const isHex = /^#[0-9a-f]{6}$/i.test(c.color);
-				const swatch = isHex
+				const bg = isHex
 					? c.color
-					: 'repeating-linear-gradient(45deg,#2a2f3d,#2a2f3d 4px,#1e222e 4px,#1e222e 8px)';
+					: 'repeating-linear-gradient(45deg,#ccc,#ccc 4px,#eee 4px,#eee 8px)';
 				return (
 					'<span class="color-swatch" style="background:' +
-					swatch +
+					bg +
 					'" title="' +
 					escapeHtml(c.color) +
 					'"></span>'
@@ -538,25 +515,29 @@ const iconSvg: Record<string, string> = {
 			}
 
 			function dot(on) {
-				return '<span class="dot ' + (on ? 'yes' : 'no') + '"></span>';
+				return (
+					'<span class="dot" style="background:' +
+					(on ? '#4caf7d' : '#dfe3ee') +
+					'"></span>'
+				);
 			}
 
 			function renderChips() {
 				document.getElementById('chips').innerHTML = CHIPS.map(
 					chip =>
-						'<span class="chip ' +
-						(activeFilter === chip.id ? 'active' : '') +
+						'<button class="' +
+						(activeFilter === chip.id ? 'on' : '') +
 						'" data-filter="' +
 						chip.id +
 						'">' +
 						chip.label +
-						'</span>'
+						'</button>'
 				).join('');
-				document.querySelectorAll('.chip').forEach(chip => {
-					chip.addEventListener('click', () =>
-						setFilter(chip.getAttribute('data-filter'))
+				document
+					.querySelectorAll('.chips button')
+					.forEach(b =>
+						b.addEventListener('click', () => setFilter(b.getAttribute('data-filter')))
 					);
-				});
 			}
 
 			function arcPath(cx, cy, radius, startAngle, endAngle) {
@@ -590,35 +571,34 @@ const iconSvg: Record<string, string> = {
 				);
 			}
 
-			function renderPie(containerId, legendId, segments) {
-				const total = segments.reduce((sum, seg) => sum + seg.value, 0) || 1;
-				const size = 132;
+			function donut(segments, size) {
+				const total = segments.reduce((sum, s) => sum + s.value, 0) || 1;
 				const cx = size / 2;
 				const cy = size / 2;
 				const radius = size / 2 - 2;
 				let angle = -Math.PI / 2;
 				const paths = segments
-					.filter(seg => seg.value > 0)
-					.map(seg => {
+					.filter(s => s.value > 0)
+					.map(s => {
 						const start = angle;
-						const end = angle + (seg.value / total) * Math.PI * 2;
+						const end = angle + (s.value / total) * Math.PI * 2;
 						angle = end;
 						return (
 							'<path class="slice" data-filter="' +
-							seg.filter +
-							'" d="' +
+							s.filter +
+							'" style="cursor:pointer" d="' +
 							arcPath(cx, cy, radius, start, end - 0.004) +
 							'" fill="' +
-							seg.color +
+							s.color +
 							'"><title>' +
-							seg.label +
+							s.label +
 							': ' +
-							seg.value +
+							s.value +
 							'</title></path>'
 						);
 					})
 					.join('');
-				document.getElementById(containerId).innerHTML =
+				return (
 					'<svg width="' +
 					size +
 					'" height="' +
@@ -634,47 +614,24 @@ const iconSvg: Record<string, string> = {
 					'" cy="' +
 					cy +
 					'" r="' +
-					radius * 0.56 +
-					'" fill="#161922"></circle>' +
+					radius * 0.58 +
+					'" fill="#fff"></circle>' +
 					'<text x="' +
 					cx +
 					'" y="' +
 					(cy + 6) +
-					'" text-anchor="middle" fill="#e7e9ef" font-size="22" font-weight="700">' +
+					'" text-anchor="middle" fill="#1b243f" font-size="22" font-weight="700">' +
 					total +
-					'</text></svg>';
-
-				document.getElementById(legendId).innerHTML = segments
-					.map(
-						seg =>
-							'<div class="item" data-filter="' +
-							seg.filter +
-							'"><span class="swatch" style="background:' +
-							seg.color +
-							'"></span>' +
-							seg.label +
-							'<span class="count">' +
-							seg.value +
-							'</span></div>'
-					)
-					.join('');
-
-				document
-					.querySelectorAll('#' + containerId + ' .slice, #' + legendId + ' .item')
-					.forEach(el =>
-						el.addEventListener('click', () =>
-							setFilter(el.getAttribute('data-filter'))
-						)
-					);
+					'</text></svg>'
+				);
 			}
 
 			function renderLegendActive() {
-				document.querySelectorAll('.legend .item').forEach(item => {
-					item.classList.toggle(
-						'active',
-						item.getAttribute('data-filter') === activeFilter
+				document
+					.querySelectorAll('.leg .r')
+					.forEach(r =>
+						r.classList.toggle('active', r.getAttribute('data-filter') === activeFilter)
 					);
-				});
 			}
 
 			function renderTable() {
@@ -694,11 +651,13 @@ const iconSvg: Record<string, string> = {
 					.map(
 						c =>
 							'<tr>' +
-							'<td>' +
+							'<td class="comp">' +
 							escapeHtml(c.name) +
 							'</td>' +
-							'<td><span class="tag ' +
-							c.role +
+							'<td><span class="pill" style="background:' +
+							RC[c.role] +
+							'22;color:' +
+							RC[c.role] +
 							'">' +
 							c.role +
 							'</span></td>' +
@@ -744,15 +703,15 @@ const iconSvg: Record<string, string> = {
 					' · ' +
 					REPORT.storiesAnalysed +
 					' stories · ' +
+					s.totalComponents +
+					' components · ' +
 					REPORT.contentVersion;
 
 				const cards = [
-					{ num: s.totalComponents, lbl: 'Components' },
+					{ num: s.pageSectionComponents, lbl: 'In page body' },
 					{ num: s.rolePage, lbl: 'Page types' },
-					{ num: s.roleSection, lbl: 'Page sections' },
 					{ num: s.roleSubcomponent, lbl: 'Subcomponents' },
 					{ num: s.roleUnused, lbl: 'Unused' },
-					{ num: s.stylingFull, lbl: 'Fully styled' },
 					{ num: s.withIcon, lbl: 'With icon' },
 					{ num: s.withColor, lbl: 'With color' },
 					{ num: s.withPreview, lbl: 'With preview' },
@@ -769,87 +728,49 @@ const iconSvg: Record<string, string> = {
 					)
 					.join('');
 
-				renderPie('pie-role', 'legend-role', [
-					{
-						label: 'Page type',
-						value: s.rolePage,
-						color: '#09b3af',
-						filter: 'role:page',
-					},
+				const segs = [
+					{ label: 'Page type', value: s.rolePage, color: RC.page, filter: 'role:page' },
 					{
 						label: 'Page section',
 						value: s.roleSection,
-						color: '#4caf7d',
+						color: RC.section,
 						filter: 'role:section',
 					},
 					{
 						label: 'Subcomponent',
 						value: s.roleSubcomponent,
-						color: '#f0a020',
+						color: RC.subcomponent,
 						filter: 'role:subcomponent',
 					},
 					{
 						label: 'Unused',
 						value: s.roleUnused,
-						color: '#e2526b',
+						color: RC.unused,
 						filter: 'role:unused',
 					},
-				]);
-				renderPie('pie-type', 'legend-type', [
-					{
-						label: 'Page',
-						value: s.pageComponents,
-						color: '#09b3af',
-						filter: 'type:page',
-					},
-					{
-						label: 'Nested',
-						value: s.nestedComponents,
-						color: '#f0a020',
-						filter: 'type:nested',
-					},
-					{
-						label: 'Universal',
-						value: s.universalComponents,
-						color: '#7e8cff',
-						filter: 'type:universal',
-					},
-					{
-						label: 'Unclassified',
-						value: s.unclassifiedComponents,
-						color: '#6b7280',
-						filter: 'type:unclassified',
-					},
-				]);
-				renderPie('pie-usage', 'legend-usage', [
-					{ label: 'Used', value: s.usedComponents, color: '#4caf7d', filter: 'used' },
-					{
-						label: 'Unused',
-						value: s.unusedComponents,
-						color: '#e2526b',
-						filter: 'unused',
-					},
-				]);
-				renderPie('pie-styling', 'legend-styling', [
-					{
-						label: 'Fully styled',
-						value: s.stylingFull,
-						color: '#4caf7d',
-						filter: 'styling:full',
-					},
-					{
-						label: 'Partial',
-						value: s.stylingPartial,
-						color: '#f0a020',
-						filter: 'styling:partial',
-					},
-					{
-						label: 'None',
-						value: s.stylingNone,
-						color: '#6b7280',
-						filter: 'styling:none',
-					},
-				]);
+				];
+				document.getElementById('donut').innerHTML = donut(segs, 160);
+				document.getElementById('leg').innerHTML = segs
+					.map(
+						seg =>
+							'<div class="r" data-filter="' +
+							seg.filter +
+							'"><span class="sw" style="background:' +
+							seg.color +
+							'"></span><b>' +
+							seg.value +
+							'</b> <span class="m">' +
+							seg.label +
+							'</span></div>'
+					)
+					.join('');
+				document
+					.querySelectorAll('#donut .slice, .leg .r')
+					.forEach(el =>
+						el.addEventListener('click', () =>
+							setFilter(el.getAttribute('data-filter'))
+						)
+					);
 
 				renderChips();
 				renderLegendActive();
@@ -877,7 +798,7 @@ const iconSvg: Record<string, string> = {
 				document.getElementById('dashboard').style.display = 'none';
 				state.className = 'state';
 				state.style.display = 'block';
-				state.textContent = 'Loading ' + label + '...';
+				state.textContent = 'Loading ' + label + '…';
 				try {
 					const response = await fetch(source);
 					const body = await response.json();
@@ -888,7 +809,6 @@ const iconSvg: Record<string, string> = {
 				} catch (error) {
 					state.className = 'state error';
 					state.textContent = 'Failed to load ' + label + ': ' + error.message;
-					document.getElementById('subtitle').textContent = '';
 				}
 			}
 
