@@ -153,7 +153,7 @@ const iconSvg: Record<string, string> = {
 				display: grid;
 				grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
 				gap: 14px;
-				margin-bottom: 20px;
+				margin-bottom: 16px;
 			}
 			.card {
 				background: var(--card);
@@ -171,22 +171,6 @@ const iconSvg: Record<string, string> = {
 				margin-top: 4px;
 				font-weight: 600;
 			}
-			.panels {
-				display: grid;
-				grid-template-columns: 340px 1fr;
-				gap: 16px;
-				align-items: start;
-			}
-			.side {
-				display: flex;
-				flex-direction: column;
-				gap: 16px;
-			}
-			@media (max-width: 880px) {
-				.panels {
-					grid-template-columns: 1fr;
-				}
-			}
 			.panel {
 				background: var(--card);
 				border-radius: 16px;
@@ -199,6 +183,132 @@ const iconSvg: Record<string, string> = {
 				letter-spacing: 1px;
 				color: var(--muted);
 				margin: 0 0 16px;
+			}
+			.healthrow {
+				display: grid;
+				grid-template-columns: 230px 1fr;
+				gap: 24px;
+				align-items: center;
+			}
+			@media (max-width: 760px) {
+				.healthrow {
+					grid-template-columns: 1fr;
+				}
+			}
+			.gauge {
+				display: flex;
+				flex-direction: column;
+				align-items: center;
+				justify-content: center;
+			}
+			.gauge .label {
+				font-size: 12px;
+				color: var(--muted);
+				font-weight: 600;
+				text-transform: uppercase;
+				letter-spacing: 1px;
+				margin-top: 2px;
+			}
+			.healthpanel {
+				margin-bottom: 16px;
+			}
+			.tiles {
+				display: grid;
+				grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+				gap: 14px;
+			}
+			.tile {
+				border: 1px solid var(--line);
+				border-radius: 14px;
+				padding: 16px;
+				background: #fff;
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+			}
+			.tile .head {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.tile .emoji {
+				font-size: 26px;
+				line-height: 1;
+				width: 44px;
+				height: 44px;
+				border-radius: 12px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
+			}
+			.tile .title {
+				font-size: 15px;
+				font-weight: 800;
+			}
+			.tile .pct {
+				margin-left: auto;
+				font-size: 18px;
+				font-weight: 800;
+				font-variant-numeric: tabular-nums;
+			}
+			.tile .desc {
+				font-size: 12.5px;
+				color: var(--muted);
+				line-height: 1.45;
+				min-height: 36px;
+			}
+			.tile .bar {
+				height: 7px;
+				border-radius: 4px;
+				background: #eef0f7;
+				overflow: hidden;
+			}
+			.tile .bar span {
+				display: block;
+				height: 100%;
+			}
+			.tile .meta {
+				display: flex;
+				align-items: center;
+				gap: 8px;
+				font-size: 12px;
+				color: var(--muted);
+				font-variant-numeric: tabular-nums;
+			}
+			.tile .fix {
+				margin-top: 2px;
+				border: none;
+				border-radius: 10px;
+				padding: 10px 12px;
+				font: inherit;
+				font-size: 13px;
+				font-weight: 700;
+				cursor: pointer;
+				color: #fff;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				gap: 8px;
+			}
+			.tile .fix:hover {
+				filter: brightness(1.06);
+			}
+			.tile.done .fix {
+				background: #e9ecf4 !important;
+				color: var(--muted);
+				cursor: default;
+			}
+			.panels {
+				display: grid;
+				grid-template-columns: 340px 1fr;
+				gap: 16px;
+				align-items: start;
+			}
+			@media (max-width: 880px) {
+				.panels {
+					grid-template-columns: 1fr;
+				}
 			}
 			.donutwrap {
 				display: flex;
@@ -238,70 +348,6 @@ const iconSvg: Record<string, string> = {
 			}
 			.leg .m {
 				color: var(--muted);
-			}
-			.scorewrap {
-				display: flex;
-				justify-content: center;
-				margin-bottom: 12px;
-			}
-			.tileshint {
-				font-size: 11px;
-				color: var(--muted);
-				margin: 0 0 12px;
-			}
-			.tiles {
-				display: grid;
-				grid-template-columns: 1fr 1fr;
-				gap: 10px;
-			}
-			.tile {
-				border: 1px solid var(--line);
-				border-left: 4px solid var(--line);
-				border-radius: 12px;
-				padding: 12px;
-				cursor: pointer;
-				background: #fff;
-				transition:
-					box-shadow 0.15s,
-					transform 0.05s;
-			}
-			.tile.info {
-				cursor: default;
-			}
-			.tile:hover:not(.info) {
-				box-shadow: 0 4px 14px rgba(27, 36, 63, 0.1);
-			}
-			.tile:active:not(.info) {
-				transform: translateY(1px);
-			}
-			.tile.on {
-				outline: 2px solid var(--teal);
-			}
-			.tile .te {
-				font-size: 30px;
-				line-height: 1;
-			}
-			.tile .tl {
-				font-size: 12.5px;
-				font-weight: 700;
-				margin-top: 6px;
-			}
-			.tile .tv {
-				font-size: 12px;
-				color: var(--muted);
-				margin-top: 2px;
-				font-variant-numeric: tabular-nums;
-			}
-			.tile .tbar {
-				height: 5px;
-				border-radius: 3px;
-				background: #eef0f7;
-				margin-top: 8px;
-				overflow: hidden;
-			}
-			.tile .tbar span {
-				display: block;
-				height: 100%;
 			}
 			.chips {
 				display: flex;
@@ -390,17 +436,6 @@ const iconSvg: Record<string, string> = {
 			.icon-badge.empty {
 				background: #eef0f7;
 			}
-			.color-swatch {
-				display: inline-block;
-				width: 16px;
-				height: 16px;
-				border-radius: 4px;
-				border: 1px solid rgba(0, 0, 0, 0.12);
-				vertical-align: middle;
-			}
-			.muted-dash {
-				color: #b6bccb;
-			}
 			.dot {
 				display: inline-block;
 				width: 9px;
@@ -423,6 +458,165 @@ const iconSvg: Record<string, string> = {
 				width: 100%;
 				margin-bottom: 12px;
 			}
+			.overlay {
+				position: fixed;
+				inset: 0;
+				background: rgba(15, 19, 30, 0.55);
+				display: none;
+				align-items: center;
+				justify-content: center;
+				padding: 24px;
+				z-index: 50;
+			}
+			.overlay.open {
+				display: flex;
+			}
+			.modal {
+				background: #fff;
+				border-radius: 18px;
+				width: 560px;
+				max-width: 100%;
+				max-height: 86vh;
+				overflow: auto;
+				box-shadow: 0 20px 60px rgba(15, 19, 30, 0.4);
+			}
+			.modal .mhead {
+				display: flex;
+				align-items: center;
+				gap: 12px;
+				padding: 22px 24px 8px;
+			}
+			.modal .mhead .emoji {
+				font-size: 26px;
+				width: 46px;
+				height: 46px;
+				border-radius: 12px;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				flex: 0 0 auto;
+			}
+			.modal .mhead h3 {
+				margin: 0;
+				font-size: 18px;
+				font-weight: 800;
+			}
+			.modal .mhead p {
+				margin: 2px 0 0;
+				font-size: 13px;
+				color: var(--muted);
+			}
+			.modal .mclose {
+				margin-left: auto;
+				border: none;
+				background: #eef0f7;
+				width: 32px;
+				height: 32px;
+				border-radius: 9px;
+				font-size: 16px;
+				cursor: pointer;
+				color: var(--muted);
+			}
+			.steps {
+				display: flex;
+				gap: 8px;
+				padding: 16px 24px;
+			}
+			.step {
+				flex: 1;
+				border: 1px solid var(--line);
+				border-radius: 10px;
+				padding: 10px;
+				font-size: 12px;
+				text-align: center;
+				color: var(--muted);
+			}
+			.step .n {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 20px;
+				height: 20px;
+				border-radius: 50%;
+				background: #eef0f7;
+				font-weight: 800;
+				margin-bottom: 6px;
+			}
+			.step.done {
+				border-color: var(--green);
+				color: var(--ink);
+			}
+			.step.done .n {
+				background: var(--green);
+				color: #fff;
+			}
+			.step.next {
+				border-color: var(--teal);
+				color: var(--ink);
+			}
+			.step.next .n {
+				background: var(--teal);
+				color: #06231f;
+			}
+			.affected {
+				padding: 0 24px;
+			}
+			.affected h4 {
+				font-size: 12px;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+				color: var(--muted);
+				margin: 4px 0 8px;
+			}
+			.chiplist {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 6px;
+			}
+			.chiplist span {
+				background: #f3f5fb;
+				border: 1px solid var(--line);
+				border-radius: 8px;
+				padding: 4px 8px;
+				font-size: 12px;
+			}
+			.mfoot {
+				display: flex;
+				gap: 10px;
+				align-items: center;
+				padding: 18px 24px 24px;
+			}
+			.mfoot .note {
+				font-size: 12px;
+				color: var(--muted);
+				flex: 1;
+			}
+			.mfoot .ghost {
+				border: 1px solid var(--line);
+				background: #fff;
+				color: var(--ink);
+				border-radius: 10px;
+				padding: 10px 14px;
+				font: inherit;
+				font-weight: 700;
+				font-size: 13px;
+				cursor: pointer;
+			}
+			.mfoot .primary {
+				border: none;
+				background: var(--teal);
+				color: #06231f;
+				border-radius: 10px;
+				padding: 10px 16px;
+				font: inherit;
+				font-weight: 800;
+				font-size: 13px;
+				cursor: pointer;
+			}
+			.mfoot .primary:disabled {
+				opacity: 0.55;
+				cursor: not-allowed;
+			}
 		</style>
 	</head>
 	<body>
@@ -438,21 +632,18 @@ const iconSvg: Record<string, string> = {
 			<div class="state" id="state">Loading…</div>
 			<div id="dashboard" style="display: none">
 				<div class="cards" id="cards"></div>
+				<div class="panel healthpanel">
+					<h2>Space health &amp; quick wins</h2>
+					<div class="healthrow">
+						<div class="gauge"><div id="gauge"></div></div>
+						<div class="tiles" id="tiles"></div>
+					</div>
+				</div>
 				<div class="panels">
-					<div class="side">
-						<div class="panel">
-							<h2>Space health</h2>
-							<div class="scorewrap"><div id="score"></div></div>
-							<p class="tileshint">
-								Quick wins — click a tile to see the components that need it.
-							</p>
-							<div class="tiles" id="tiles"></div>
-						</div>
-						<div class="panel">
-							<h2>Component role</h2>
-							<div class="donutwrap">
-								<div id="donut"></div><div class="leg" id="leg"></div>
-							</div>
+					<div class="panel">
+						<h2>Component role</h2>
+						<div class="donutwrap">
+							<div id="donut"></div><div class="leg" id="leg"></div>
 						</div>
 					</div>
 					<div class="panel">
@@ -477,7 +668,6 @@ const iconSvg: Record<string, string> = {
 										<th class="num" data-sort="nestedUsage">Nested</th>
 										<th class="num" data-sort="storyCount">Stories</th>
 										<th data-sort="icon">Icon</th>
-										<th data-sort="color">Color</th>
 										<th>Preview</th>
 										<th>Preset</th>
 									</tr>
@@ -486,6 +676,34 @@ const iconSvg: Record<string, string> = {
 							</table>
 						</div>
 					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="overlay" id="wizard">
+			<div class="modal">
+				<div class="mhead">
+					<span class="emoji" id="wz-emoji"></span>
+					<div>
+						<h3 id="wz-title"></h3>
+						<p id="wz-sub"></p>
+					</div>
+					<button class="mclose" id="wz-close">✕</button>
+				</div>
+				<div class="steps">
+					<div class="step done"><div class="n">1</div>Detect</div>
+					<div class="step next"><div class="n">2</div>AI proposal</div>
+					<div class="step"><div class="n">3</div>Review</div>
+					<div class="step"><div class="n">4</div>Apply</div>
+				</div>
+				<div class="affected">
+					<h4 id="wz-affected-label">Affected</h4>
+					<div class="chiplist" id="wz-affected"></div>
+				</div>
+				<div class="mfoot">
+					<span class="note" id="wz-note"></span>
+					<button class="ghost" id="wz-filter">Show in table</button>
+					<button class="primary" id="wz-start" disabled>Generate AI proposals</button>
 				</div>
 			</div>
 		</div>
@@ -504,6 +722,49 @@ const iconSvg: Record<string, string> = {
 				unused: '#e2526b',
 			};
 
+			const TILE_DEFS = [
+				{
+					id: 'icon',
+					emoji: '🎨',
+					label: 'Icons',
+					field: 'hasIcon',
+					filter: 'no-icon',
+					desc: 'Block icons make the component picker scannable for editors.',
+				},
+				{
+					id: 'color',
+					emoji: '🌈',
+					label: 'Colors',
+					field: 'hasColor',
+					filter: 'no-color',
+					desc: 'Brand colors group related blocks at a glance in the library.',
+				},
+				{
+					id: 'preview',
+					emoji: '📷',
+					label: 'Previews',
+					field: 'hasPreview',
+					filter: 'no-preview',
+					desc: 'Preview images show editors what a block looks like before inserting.',
+				},
+				{
+					id: 'preset',
+					emoji: '🧩',
+					label: 'Presets',
+					field: 'hasPreset',
+					filter: 'no-preset',
+					desc: 'Presets give editors ready-made starting points for a block.',
+				},
+				{
+					id: 'seo',
+					emoji: '🔍',
+					label: 'SEO',
+					seo: true,
+					filter: null,
+					desc: 'Meta title and description drive search ranking and social sharing.',
+				},
+			];
+
 			const CHIPS = [
 				{ id: 'in-page', label: 'In page' },
 				{ id: 'all', label: 'All' },
@@ -514,6 +775,7 @@ const iconSvg: Record<string, string> = {
 				{ id: 'no-icon', label: 'Missing icon' },
 				{ id: 'no-color', label: 'Missing color' },
 				{ id: 'no-preview', label: 'Missing preview' },
+				{ id: 'no-preset', label: 'Missing preset' },
 			];
 
 			const escapeHtml = value =>
@@ -538,12 +800,16 @@ const iconSvg: Record<string, string> = {
 			function setFilter(mode) {
 				activeFilter = mode;
 				renderChips();
-				renderTilesActive();
+				renderActive();
 				renderTable();
 			}
 
 			function severity(pct) {
 				return pct >= 80 ? '#4caf7d' : pct >= 40 ? '#f0a020' : '#e2526b';
+			}
+
+			function severityWord(pct) {
+				return pct >= 80 ? 'Healthy' : pct >= 40 ? 'Needs work' : 'Critical';
 			}
 
 			function isLight(hex) {
@@ -583,21 +849,6 @@ const iconSvg: Record<string, string> = {
 				);
 			}
 
-			function colorCell(c) {
-				if (!c.color) return '<span class="muted-dash">—</span>';
-				const isHex = /^#[0-9a-f]{6}$/i.test(c.color);
-				const bg = isHex
-					? c.color
-					: 'repeating-linear-gradient(45deg,#ccc,#ccc 4px,#eee 4px,#eee 8px)';
-				return (
-					'<span class="color-swatch" style="background:' +
-					bg +
-					'" title="' +
-					escapeHtml(c.color) +
-					'"></span>'
-				);
-			}
-
 			function dot(on) {
 				return (
 					'<span class="dot" style="background:' +
@@ -624,87 +875,104 @@ const iconSvg: Record<string, string> = {
 					);
 			}
 
-			function arcPath(cx, cy, radius, startAngle, endAngle) {
-				const toXy = angle => [
-					cx + radius * Math.cos(angle),
-					cy + radius * Math.sin(angle),
-				];
-				const [x1, y1] = toXy(startAngle);
-				const [x2, y2] = toXy(endAngle);
-				const large = endAngle - startAngle > Math.PI ? 1 : 0;
+			function polar(cx, cy, r, angle) {
+				return [cx + r * Math.cos(angle), cy + r * Math.sin(angle)];
+			}
+
+			function arcStroke(cx, cy, r, a0, a1) {
+				const [x0, y0] = polar(cx, cy, r, a0);
+				const [x1, y1] = polar(cx, cy, r, a1);
+				const large = a1 - a0 > Math.PI ? 1 : 0;
+				return (
+					'M ' +
+					x0 +
+					' ' +
+					y0 +
+					' A ' +
+					r +
+					' ' +
+					r +
+					' 0 ' +
+					large +
+					' 1 ' +
+					x1 +
+					' ' +
+					y1
+				);
+			}
+
+			function gauge(pct) {
+				const w = 200;
+				const h = 128;
+				const cx = w / 2;
+				const cy = 112;
+				const r = 88;
+				const start = Math.PI;
+				const end = Math.PI * 2;
+				const value = start + (end - start) * (pct / 100);
+				const color = severity(pct);
+				return (
+					'<svg width="' +
+					w +
+					'" height="' +
+					h +
+					'" viewBox="0 0 ' +
+					w +
+					' ' +
+					h +
+					'">' +
+					'<path d="' +
+					arcStroke(cx, cy, r, start, end) +
+					'" fill="none" stroke="#eef0f7" stroke-width="16" stroke-linecap="round" />' +
+					'<path d="' +
+					arcStroke(cx, cy, r, start, value) +
+					'" fill="none" stroke="' +
+					color +
+					'" stroke-width="16" stroke-linecap="round" />' +
+					'<text x="' +
+					cx +
+					'" y="' +
+					(cy - 18) +
+					'" text-anchor="middle" fill="#1b243f" font-size="44" font-weight="800">' +
+					pct +
+					'</text>' +
+					'<text x="' +
+					cx +
+					'" y="' +
+					(cy + 4) +
+					'" text-anchor="middle" fill="' +
+					color +
+					'" font-size="13" font-weight="800">' +
+					severityWord(pct) +
+					'</text>' +
+					'</svg>'
+				);
+			}
+
+			function arcWedge(cx, cy, r, a0, a1) {
+				const [x0, y0] = polar(cx, cy, r, a0);
+				const [x1, y1] = polar(cx, cy, r, a1);
+				const large = a1 - a0 > Math.PI ? 1 : 0;
 				return (
 					'M ' +
 					cx +
 					' ' +
 					cy +
 					' L ' +
-					x1 +
+					x0 +
 					' ' +
-					y1 +
+					y0 +
 					' A ' +
-					radius +
+					r +
 					' ' +
-					radius +
+					r +
 					' 0 ' +
 					large +
 					' 1 ' +
-					x2 +
+					x1 +
 					' ' +
-					y2 +
+					y1 +
 					' Z'
-				);
-			}
-
-			function ringGauge(pct, size) {
-				const cx = size / 2;
-				const cy = size / 2;
-				const radius = size / 2 - 6;
-				const color = severity(pct);
-				const track = arcPath(
-					cx,
-					cy,
-					radius,
-					-Math.PI / 2,
-					-Math.PI / 2 + Math.PI * 2 - 0.0001
-				);
-				const filled = arcPath(
-					cx,
-					cy,
-					radius,
-					-Math.PI / 2,
-					-Math.PI / 2 + Math.PI * 2 * (pct / 100)
-				);
-				return (
-					'<svg width="' +
-					size +
-					'" height="' +
-					size +
-					'" viewBox="0 0 ' +
-					size +
-					' ' +
-					size +
-					'">' +
-					'<path d="' +
-					track +
-					'" fill="none" stroke="#eef0f7" stroke-width="12" stroke-linecap="round" />' +
-					'<path d="' +
-					filled +
-					'" fill="none" stroke="' +
-					color +
-					'" stroke-width="12" stroke-linecap="round" />' +
-					'<text x="' +
-					cx +
-					'" y="' +
-					(cy - 2) +
-					'" text-anchor="middle" fill="#1b243f" font-size="30" font-weight="800">' +
-					pct +
-					'</text>' +
-					'<text x="' +
-					cx +
-					'" y="' +
-					(cy + 16) +
-					'" text-anchor="middle" fill="#7a829b" font-size="11" font-weight="600">HEALTH</text>' +
-					'</svg>'
 				);
 			}
 
@@ -717,14 +985,14 @@ const iconSvg: Record<string, string> = {
 				const paths = segments
 					.filter(s => s.value > 0)
 					.map(s => {
-						const start = angle;
-						const end = angle + (s.value / total) * Math.PI * 2;
-						angle = end;
+						const startA = angle;
+						const endA = angle + (s.value / total) * Math.PI * 2;
+						angle = endA;
 						return (
 							'<path class="slice" data-filter="' +
 							s.filter +
 							'" style="cursor:pointer" d="' +
-							arcPath(cx, cy, radius, start, end - 0.004) +
+							arcWedge(cx, cy, radius, startA, endA - 0.004) +
 							'" fill="' +
 							s.color +
 							'"><title>' +
@@ -763,42 +1031,38 @@ const iconSvg: Record<string, string> = {
 				);
 			}
 
-			function buildTiles() {
-				const s = REPORT.summary;
-				const total = s.totalComponents;
-				const seo = REPORT.signals && REPORT.signals.seo;
-				const tiles = [
-					{ emoji: '🎨', label: 'Icons', have: s.withIcon, total, filter: 'no-icon' },
-					{ emoji: '🌈', label: 'Colors', have: s.withColor, total, filter: 'no-color' },
-					{
-						emoji: '📷',
-						label: 'Previews',
-						have: s.withPreview,
-						total,
-						filter: 'no-preview',
-					},
-					{
-						emoji: '🧩',
-						label: 'Presets',
-						have: s.withPreset,
-						total,
-						filter: 'no-preset',
-					},
-				];
-				if (seo && seo.totalStories) {
-					tiles.push({
-						emoji: '🔍',
-						label: 'SEO',
-						have: seo.withTitle,
-						total: seo.totalStories,
-						unit: 'stories',
-						filter: null,
-					});
+			function tileStats(def) {
+				if (def.seo) {
+					const seo = (REPORT.signals && REPORT.signals.seo) || {
+						totalStories: 0,
+						withTitle: 0,
+					};
+					return { have: seo.withTitle, total: seo.totalStories, unit: 'stories' };
 				}
-				return tiles.map(t => ({
-					...t,
-					pct: t.total ? Math.round((t.have / t.total) * 100) : 0,
-				}));
+				const total = REPORT.components.length;
+				const have = REPORT.components.filter(c => c[def.field]).length;
+				return { have, total, unit: 'components' };
+			}
+
+			function buildTiles() {
+				return TILE_DEFS.map(def => {
+					const st = tileStats(def);
+					const pct = st.total ? Math.round((st.have / st.total) * 100) : 0;
+					return {
+						...def,
+						have: st.have,
+						total: st.total,
+						unit: st.unit,
+						missing: st.total - st.have,
+						pct,
+					};
+				});
+			}
+
+			function healthScore() {
+				const tiles = buildTiles();
+				if (!tiles.length) return 0;
+				return Math.round(tiles.reduce((sum, t) => sum + t.pct, 0) / tiles.length);
 			}
 
 			function renderTiles() {
@@ -806,58 +1070,116 @@ const iconSvg: Record<string, string> = {
 				document.getElementById('tiles').innerHTML = tiles
 					.map(t => {
 						const color = severity(t.pct);
-						const cls =
-							'tile' +
-							(t.filter ? '' : ' info') +
-							(t.filter && activeFilter === t.filter ? ' on' : '');
-						const unit = t.unit || 'components';
+						const tint = color + '22';
+						const done = t.missing === 0;
+						const fixLabel = done
+							? '✓ All set'
+							: 'Fix ' +
+								t.missing +
+								' ' +
+								(t.unit === 'stories' ? 'stories' : 'components') +
+								' →';
 						return (
-							'<div class="' +
-							cls +
-							'"' +
-							(t.filter ? ' data-filter="' + t.filter + '"' : '') +
-							' style="border-left-color:' +
+							'<div class="tile' +
+							(done ? ' done' : '') +
+							'">' +
+							'<div class="head">' +
+							'<span class="emoji" style="background:' +
+							tint +
+							'">' +
+							t.emoji +
+							'</span>' +
+							'<span class="title">' +
+							t.label +
+							'</span>' +
+							'<span class="pct" style="color:' +
 							color +
 							'">' +
-							'<div class="te">' +
-							t.emoji +
-							'</div>' +
-							'<div class="tl">' +
-							t.label +
-							'</div>' +
-							'<div class="tv">' +
-							t.have +
-							'/' +
-							t.total +
-							' ' +
-							unit +
-							' · ' +
 							t.pct +
-							'%</div>' +
-							'<div class="tbar"><span style="width:' +
+							'%</span>' +
+							'</div>' +
+							'<div class="desc">' +
+							t.desc +
+							'</div>' +
+							'<div class="bar"><span style="width:' +
 							t.pct +
 							'%;background:' +
 							color +
 							'"></span></div>' +
+							'<div class="meta">' +
+							t.have +
+							' / ' +
+							t.total +
+							' ' +
+							t.unit +
+							' have it</div>' +
+							'<button class="fix" data-tile="' +
+							t.id +
+							'" style="background:' +
+							(done ? '#e9ecf4' : color) +
+							'">' +
+							fixLabel +
+							'</button>' +
 							'</div>'
 						);
 					})
 					.join('');
-				document
-					.querySelectorAll('#tiles .tile[data-filter]')
-					.forEach(el =>
-						el.addEventListener('click', () =>
-							setFilter(el.getAttribute('data-filter'))
-						)
-					);
+				document.querySelectorAll('.tile .fix').forEach(b => {
+					if (!b.closest('.tile').classList.contains('done')) {
+						b.addEventListener('click', () => openWizard(b.getAttribute('data-tile')));
+					}
+				});
 			}
 
-			function renderTilesActive() {
-				document
-					.querySelectorAll('#tiles .tile[data-filter]')
-					.forEach(el =>
-						el.classList.toggle('on', el.getAttribute('data-filter') === activeFilter)
-					);
+			function openWizard(tileId) {
+				const def = TILE_DEFS.find(d => d.id === tileId);
+				if (!def) return;
+				const st = tileStats(def);
+				const missing = st.total - st.have;
+				document.getElementById('wz-emoji').textContent = def.emoji;
+				document.getElementById('wz-emoji').style.background = '#eef0f7';
+				document.getElementById('wz-title').textContent = 'Fix: ' + def.label;
+				document.getElementById('wz-sub').textContent =
+					missing + ' ' + st.unit + ' are missing ' + def.label.toLowerCase() + '.';
+
+				const affectedEl = document.getElementById('wz-affected');
+				if (def.seo) {
+					document.getElementById('wz-affected-label').textContent = 'Detected';
+					affectedEl.innerHTML =
+						'<span>' +
+						missing +
+						' stories without a meta ' +
+						def.label.toLowerCase() +
+						'</span>';
+					document.getElementById('wz-filter').style.display = 'none';
+				} else {
+					document.getElementById('wz-filter').style.display = '';
+					const names = REPORT.components.filter(c => !c[def.field]).map(c => c.name);
+					document.getElementById('wz-affected-label').textContent =
+						'Affected components (' + names.length + ')';
+					const shown = names.slice(0, 24);
+					affectedEl.innerHTML =
+						shown.map(n => '<span>' + escapeHtml(n) + '</span>').join('') +
+						(names.length > shown.length
+							? '<span>+ ' + (names.length - shown.length) + ' more</span>'
+							: '');
+				}
+
+				document.getElementById('wz-note').textContent =
+					'AI proposals need live mode + ANTHROPIC_API_KEY (autofix pipeline).';
+				const filterBtn = document.getElementById('wz-filter');
+				filterBtn.onclick = () => {
+					closeWizard();
+					if (def.filter) setFilter(def.filter);
+				};
+				document.getElementById('wizard').classList.add('open');
+			}
+
+			function closeWizard() {
+				document.getElementById('wizard').classList.remove('open');
+			}
+
+			function renderActive() {
 				document
 					.querySelectorAll('.leg .r')
 					.forEach(r =>
@@ -912,12 +1234,6 @@ const iconSvg: Record<string, string> = {
 					);
 			}
 
-			function healthScore() {
-				const tiles = buildTiles();
-				if (!tiles.length) return 0;
-				return Math.round(tiles.reduce((sum, t) => sum + t.pct, 0) / tiles.length);
-			}
-
 			function renderTable() {
 				const term = document.getElementById('search').value.toLowerCase();
 				const rows = REPORT.components
@@ -966,9 +1282,6 @@ const iconSvg: Record<string, string> = {
 							iconBadge(c) +
 							'</td>' +
 							'<td>' +
-							colorCell(c) +
-							'</td>' +
-							'<td>' +
 							dot(c.hasPreview) +
 							'</td>' +
 							'<td>' +
@@ -992,19 +1305,18 @@ const iconSvg: Record<string, string> = {
 					REPORT.contentVersion;
 
 				const cards = [
-					{ num: s.pageSectionComponents, lbl: 'In page body' },
-					{ num: s.rolePage, lbl: 'Page types' },
-					{ num: s.roleSubcomponent, lbl: 'Subcomponents' },
-					{ num: s.roleUnused, lbl: 'Unused' },
-					{ num: s.withIcon, lbl: 'With icon' },
-					{ num: s.withColor, lbl: 'With color' },
-					{ num: s.withPreview, lbl: 'With preview' },
-					{ num: s.withPreset, lbl: 'With preset' },
+					{ num: s.totalComponents, lbl: 'Components', color: '#6b5ce7' },
+					{ num: s.pageSectionComponents, lbl: 'In page body', color: RC.section },
+					{ num: s.rolePage, lbl: 'Page types', color: RC.page },
+					{ num: s.roleSubcomponent, lbl: 'Subcomponents', color: RC.subcomponent },
+					{ num: s.roleUnused, lbl: 'Unused', color: RC.unused },
 				];
 				document.getElementById('cards').innerHTML = cards
 					.map(
 						c =>
-							'<div class="card"><div class="num">' +
+							'<div class="card"><div class="num" style="color:' +
+							c.color +
+							'">' +
 							c.num +
 							'</div><div class="lbl">' +
 							c.lbl +
@@ -1012,12 +1324,11 @@ const iconSvg: Record<string, string> = {
 					)
 					.join('');
 
-				document.getElementById('score').innerHTML = ringGauge(healthScore(), 150);
+				document.getElementById('gauge').innerHTML = gauge(healthScore());
 				renderTiles();
 				renderRoleDonut();
-
 				renderChips();
-				renderTilesActive();
+				renderActive();
 
 				document.querySelectorAll('th[data-sort]').forEach(th => {
 					th.addEventListener('click', () => {
@@ -1062,6 +1373,10 @@ const iconSvg: Record<string, string> = {
 			document
 				.getElementById('btn-live')
 				.addEventListener('click', () => load(liveEndpoint, 'live data'));
+			document.getElementById('wz-close').addEventListener('click', closeWizard);
+			document.getElementById('wizard').addEventListener('click', e => {
+				if (e.target.id === 'wizard') closeWizard();
+			});
 
 			load(staticData, 'static snapshot');
 		</script>
