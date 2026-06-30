@@ -60,7 +60,7 @@ const iconSvg: Record<string, string> = {
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Storyblok space health</title>
+		<title>LightBlok — Storyblok UX optimization</title>
 		<style is:global>
 			:root {
 				--ink: #1b243f;
@@ -117,6 +117,48 @@ const iconSvg: Record<string, string> = {
 				margin: 6px 0 0;
 				color: #b9c0d6;
 				font-size: 14px;
+			}
+			.bar .tagline {
+				color: #fff;
+				font-weight: 600;
+				font-size: 14px;
+				margin-top: 8px;
+			}
+			.bar #subtitle {
+				font-size: 13px;
+			}
+			.cats {
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				margin-top: 14px;
+				width: 100%;
+			}
+			.cat {
+				display: grid;
+				grid-template-columns: 92px 1fr 38px;
+				align-items: center;
+				gap: 8px;
+				font-size: 12px;
+			}
+			.cat .cname {
+				color: var(--muted);
+				font-weight: 700;
+			}
+			.cat .ctrack {
+				height: 6px;
+				border-radius: 4px;
+				background: #eef0f7;
+				overflow: hidden;
+			}
+			.cat .ctrack span {
+				display: block;
+				height: 100%;
+			}
+			.cat .cval {
+				text-align: right;
+				font-weight: 700;
+				font-variant-numeric: tabular-nums;
 			}
 			.bar .sourcebar {
 				margin-top: 14px;
@@ -636,7 +678,8 @@ const iconSvg: Record<string, string> = {
 	</head>
 	<body>
 		<div class="bar">
-			<h1><span class="logo">S</span> Space health</h1>
+			<h1><span class="logo">L</span> LightBlok</h1>
+			<p class="tagline">Storyblok UX optimization — get the most out of Storyblok</p>
 			<p id="subtitle">Loading component insights…</p>
 			<div class="sourcebar">
 				<button id="btn-static">Static snapshot</button>
@@ -648,9 +691,12 @@ const iconSvg: Record<string, string> = {
 			<div id="dashboard" style="display: none">
 				<div class="cards" id="cards"></div>
 				<div class="panel healthpanel">
-					<h2>Space health &amp; quick wins</h2>
+					<h2>Setup coverage &amp; quick wins</h2>
 					<div class="healthrow">
-						<div class="gauge"><div id="gauge"></div></div>
+						<div class="gauge">
+							<div id="gauge"></div>
+							<div class="cats" id="cats"></div>
+						</div>
 						<div class="tiles" id="tiles"></div>
 					</div>
 				</div>
@@ -742,7 +788,8 @@ const iconSvg: Record<string, string> = {
 					id: 'icon',
 					emoji: '🎨',
 					label: 'Icons',
-					field: 'hasIcon',
+					cat: 'Schema',
+					bad: c => !c.hasIcon,
 					filter: 'no-icon',
 					desc: 'Block icons make the component picker scannable for editors.',
 				},
@@ -750,7 +797,8 @@ const iconSvg: Record<string, string> = {
 					id: 'color',
 					emoji: '🌈',
 					label: 'Colors',
-					field: 'hasColor',
+					cat: 'Schema',
+					bad: c => !c.hasColor,
 					filter: 'no-color',
 					desc: 'Brand colors group related blocks at a glance in the library.',
 				},
@@ -758,7 +806,8 @@ const iconSvg: Record<string, string> = {
 					id: 'preview',
 					emoji: '📷',
 					label: 'Previews',
-					field: 'hasPreview',
+					cat: 'Schema',
+					bad: c => !c.hasPreview,
 					filter: 'no-preview',
 					desc: 'Preview images show editors what a block looks like before inserting.',
 				},
@@ -766,7 +815,8 @@ const iconSvg: Record<string, string> = {
 					id: 'preset',
 					emoji: '🧩',
 					label: 'Presets',
-					field: 'hasPreset',
+					cat: 'Schema',
+					bad: c => !c.hasPreset,
 					filter: 'no-preset',
 					desc: 'Presets give editors ready-made starting points for a block.',
 				},
@@ -774,10 +824,38 @@ const iconSvg: Record<string, string> = {
 					id: 'seo',
 					emoji: '🔍',
 					label: 'SEO',
+					cat: 'SEO',
 					seo: true,
 					filter: null,
 					desc: 'Meta title and description drive search ranking and social sharing.',
 				},
+				{
+					id: 'scoped',
+					emoji: '🌐',
+					label: 'Scoped',
+					cat: 'Hygiene',
+					bad: c => c.classification === 'universal',
+					filter: 'universal',
+					review: true,
+					desc: 'Components allowed everywhere are hard to govern — scope them to where they belong.',
+				},
+				{
+					id: 'used',
+					emoji: '🗑️',
+					label: 'In use',
+					cat: 'Hygiene',
+					bad: c => c.totalUsage === 0,
+					filter: 'unused',
+					review: true,
+					desc: 'Unused components clutter the library — review them for cleanup.',
+				},
+			];
+
+			const CATEGORIES = [
+				{ key: 'Schema', signals: ['icon', 'color', 'preview', 'preset'] },
+				{ key: 'Content', adoption: true },
+				{ key: 'SEO', signals: ['seo'] },
+				{ key: 'Hygiene', signals: ['scoped'] },
 			];
 
 			const CHIPS = [
@@ -808,6 +886,7 @@ const iconSvg: Record<string, string> = {
 				if (mode === 'no-color') return !c.hasColor;
 				if (mode === 'no-preview') return !c.hasPreview;
 				if (mode === 'no-preset') return !c.hasPreset;
+				if (mode === 'universal') return c.classification === 'universal';
 				if (mode.startsWith('role:')) return c.role === mode.slice(5);
 				return true;
 			}
@@ -824,7 +903,11 @@ const iconSvg: Record<string, string> = {
 			}
 
 			function severityWord(pct) {
-				return pct >= 80 ? 'Healthy' : pct >= 40 ? 'Needs work' : 'Critical';
+				return pct >= 80
+					? 'Well configured'
+					: pct >= 40
+						? 'Room to grow'
+						: 'Lots of upside';
 			}
 
 			function isLight(hex) {
@@ -1055,8 +1138,29 @@ const iconSvg: Record<string, string> = {
 					return { have: seo.withTitle, total: seo.totalStories, unit: 'stories' };
 				}
 				const total = REPORT.components.length;
-				const have = REPORT.components.filter(c => c[def.field]).length;
+				const have = total - REPORT.components.filter(def.bad).length;
 				return { have, total, unit: 'components' };
+			}
+
+			function categoryScores() {
+				const tilePct = {};
+				buildTiles().forEach(t => {
+					tilePct[t.id] = t.pct;
+				});
+				const usedPct = REPORT.summary.totalComponents
+					? Math.round(
+							(REPORT.summary.usedComponents / REPORT.summary.totalComponents) * 100
+						)
+					: 0;
+				return CATEGORIES.map(cat => {
+					let pct;
+					if (cat.adoption) pct = usedPct;
+					else {
+						const vals = cat.signals.map(id => tilePct[id] ?? 0);
+						pct = Math.round(vals.reduce((s, v) => s + v, 0) / vals.length);
+					}
+					return { key: cat.key, pct };
+				});
 			}
 
 			function buildTiles() {
@@ -1074,10 +1178,31 @@ const iconSvg: Record<string, string> = {
 				});
 			}
 
-			function healthScore() {
-				const tiles = buildTiles();
-				if (!tiles.length) return 0;
-				return Math.round(tiles.reduce((sum, t) => sum + t.pct, 0) / tiles.length);
+			function coverageScore() {
+				const cats = categoryScores();
+				if (!cats.length) return 0;
+				return Math.round(cats.reduce((sum, c) => sum + c.pct, 0) / cats.length);
+			}
+
+			function renderCats() {
+				document.getElementById('cats').innerHTML = categoryScores()
+					.map(c => {
+						const color = severity(c.pct);
+						return (
+							'<div class="cat"><span class="cname">' +
+							c.key +
+							'</span><span class="ctrack"><span style="width:' +
+							c.pct +
+							'%;background:' +
+							color +
+							'"></span></span><span class="cval" style="color:' +
+							color +
+							'">' +
+							c.pct +
+							'%</span></div>'
+						);
+					})
+					.join('');
 			}
 
 			function renderTiles() {
@@ -1089,7 +1214,7 @@ const iconSvg: Record<string, string> = {
 						const done = t.missing === 0;
 						const fixLabel = done
 							? '✓ All set'
-							: 'Fix ' +
+							: (t.review ? 'Review ' : 'Fix ') +
 								t.missing +
 								' ' +
 								(t.unit === 'stories' ? 'stories' : 'components') +
@@ -1173,7 +1298,7 @@ const iconSvg: Record<string, string> = {
 					filterBtn.style.display = 'none';
 				} else {
 					filterBtn.style.display = '';
-					const names = REPORT.components.filter(c => !c[def.field]).map(c => c.name);
+					const names = REPORT.components.filter(def.bad).map(c => c.name);
 					document.getElementById('wz-affected-label').textContent =
 						'Affected components (' + names.length + ')';
 					const shown = names.slice(0, 24);
@@ -1210,12 +1335,19 @@ const iconSvg: Record<string, string> = {
 				if (def.id === 'preview') {
 					noteEl.textContent =
 						'Click a component to screenshot it, or run all visible — triggers the screenshot webhook.';
+					startBtn.style.display = '';
 					startBtn.disabled = false;
 					startBtn.textContent = 'Generate screenshots';
 					startBtn.onclick = () => runScreenshots();
+				} else if (def.review) {
+					noteEl.textContent =
+						'Review these in the table and scope or remove them in Storyblok.';
+					startBtn.style.display = 'none';
+					startBtn.onclick = null;
 				} else {
 					noteEl.textContent =
 						'AI proposals need live mode + ANTHROPIC_API_KEY (autofix pipeline).';
+					startBtn.style.display = '';
 					startBtn.disabled = true;
 					startBtn.textContent = 'Generate AI proposals';
 					startBtn.onclick = null;
@@ -1414,7 +1546,8 @@ const iconSvg: Record<string, string> = {
 					)
 					.join('');
 
-				document.getElementById('gauge').innerHTML = gauge(healthScore());
+				document.getElementById('gauge').innerHTML = gauge(coverageScore());
+				renderCats();
 				renderTiles();
 				renderRoleDonut();
 				renderChips();
