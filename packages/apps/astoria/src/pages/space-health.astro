@@ -580,6 +580,21 @@ const iconSvg: Record<string, string> = {
 				padding: 4px 8px;
 				font-size: 12px;
 			}
+			.chiplist button.shot {
+				background: #f3f5fb;
+				border: 1px solid var(--line);
+				border-radius: 8px;
+				padding: 4px 8px;
+				font: inherit;
+				font-size: 12px;
+				cursor: pointer;
+			}
+			.chiplist button.shot:hover {
+				border-color: var(--teal);
+			}
+			.chiplist button.shot:disabled {
+				cursor: default;
+			}
 			.mfoot {
 				display: flex;
 				gap: 10px;
@@ -1143,6 +1158,10 @@ const iconSvg: Record<string, string> = {
 					missing + ' ' + st.unit + ' are missing ' + def.label.toLowerCase() + '.';
 
 				const affectedEl = document.getElementById('wz-affected');
+				const filterBtn = document.getElementById('wz-filter');
+				const startBtn = document.getElementById('wz-start');
+				const noteEl = document.getElementById('wz-note');
+
 				if (def.seo) {
 					document.getElementById('wz-affected-label').textContent = 'Detected';
 					affectedEl.innerHTML =
@@ -1151,28 +1170,99 @@ const iconSvg: Record<string, string> = {
 						' stories without a meta ' +
 						def.label.toLowerCase() +
 						'</span>';
-					document.getElementById('wz-filter').style.display = 'none';
+					filterBtn.style.display = 'none';
 				} else {
-					document.getElementById('wz-filter').style.display = '';
+					filterBtn.style.display = '';
 					const names = REPORT.components.filter(c => !c[def.field]).map(c => c.name);
 					document.getElementById('wz-affected-label').textContent =
 						'Affected components (' + names.length + ')';
 					const shown = names.slice(0, 24);
-					affectedEl.innerHTML =
-						shown.map(n => '<span>' + escapeHtml(n) + '</span>').join('') +
-						(names.length > shown.length
+					const more =
+						names.length > shown.length
 							? '<span>+ ' + (names.length - shown.length) + ' more</span>'
-							: '');
+							: '';
+					if (def.id === 'preview') {
+						affectedEl.innerHTML =
+							shown
+								.map(
+									n =>
+										'<button class="shot" data-comp="' +
+										escapeHtml(n) +
+										'">' +
+										escapeHtml(n) +
+										'</button>'
+								)
+								.join('') + more;
+						affectedEl
+							.querySelectorAll('button.shot')
+							.forEach(b => b.addEventListener('click', () => shootComponent(b)));
+					} else {
+						affectedEl.innerHTML =
+							shown.map(n => '<span>' + escapeHtml(n) + '</span>').join('') + more;
+					}
 				}
 
-				document.getElementById('wz-note').textContent =
-					'AI proposals need live mode + ANTHROPIC_API_KEY (autofix pipeline).';
-				const filterBtn = document.getElementById('wz-filter');
 				filterBtn.onclick = () => {
 					closeWizard();
 					if (def.filter) setFilter(def.filter);
 				};
+
+				if (def.id === 'preview') {
+					noteEl.textContent =
+						'Click a component to screenshot it, or run all visible — triggers the screenshot webhook.';
+					startBtn.disabled = false;
+					startBtn.textContent = 'Generate screenshots';
+					startBtn.onclick = () => runScreenshots();
+				} else {
+					noteEl.textContent =
+						'AI proposals need live mode + ANTHROPIC_API_KEY (autofix pipeline).';
+					startBtn.disabled = true;
+					startBtn.textContent = 'Generate AI proposals';
+					startBtn.onclick = null;
+				}
+
 				document.getElementById('wizard').classList.add('open');
+			}
+
+			async function shootComponent(btn) {
+				const name = btn.getAttribute('data-comp');
+				btn.disabled = true;
+				btn.textContent = '⏳ ' + name;
+				try {
+					const res = await fetch(
+						'/api/screenshot?componentName=' + encodeURIComponent(name)
+					);
+					const data = await res.json();
+					if (data.ok) {
+						btn.style.background = '#e7f6ee';
+						btn.style.borderColor = '#4caf7d';
+						btn.textContent = '✓ ' + name;
+					} else {
+						btn.style.background = '#fdeef0';
+						btn.style.borderColor = '#e2526b';
+						btn.textContent = '✗ ' + name;
+						btn.title = 'webhook status ' + (data.status || data.error || 'error');
+					}
+				} catch (error) {
+					btn.style.background = '#fdeef0';
+					btn.style.borderColor = '#e2526b';
+					btn.textContent = '✗ ' + name;
+					btn.title = String(error);
+				}
+				btn.disabled = false;
+			}
+
+			async function runScreenshots() {
+				const btns = Array.from(document.querySelectorAll('#wz-affected button.shot'));
+				const startBtn = document.getElementById('wz-start');
+				const noteEl = document.getElementById('wz-note');
+				startBtn.disabled = true;
+				for (let i = 0; i < btns.length; i++) {
+					noteEl.textContent = 'Screenshotting ' + (i + 1) + ' / ' + btns.length + '…';
+					await shootComponent(btns[i]);
+				}
+				noteEl.textContent = 'Done — triggered ' + btns.length + ' screenshot webhooks.';
+				startBtn.disabled = false;
 			}
 
 			function closeWizard() {
