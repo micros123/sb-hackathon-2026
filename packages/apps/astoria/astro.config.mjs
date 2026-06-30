@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig, envField } from 'astro/config';
 import node from '@astrojs/node';
+import netlify from '@astrojs/netlify';
 import react from '@astrojs/react';
 import tailwind from '@astrojs/tailwind';
 import { storyblok } from '@storyblok/astro';
@@ -11,10 +12,15 @@ const env = loadEnv(mode, 'environments', '');
 const accessToken = env.PUBLIC_STORYBLOK_ACCESS_TOKEN;
 const region = env.PUBLIC_STORYBLOK_REGION || 'eu';
 
+//* Adapter is chosen per deploy target: Netlify serverless when
+//* DEPLOY_TARGET=netlify (set in netlify.toml), otherwise the standalone Node
+//* server (local preview, Docker/KAAP).
+const adapter = process.env.DEPLOY_TARGET === 'netlify' ? netlify() : node({ mode: 'standalone' });
+
 export default defineConfig({
 	output: 'server',
 	server: { port: 3000 },
-	adapter: node({ mode: 'standalone' }),
+	adapter,
 	trailingSlash: 'ignore',
 
 	//* Disable image optimisation so the native `sharp` dependency is not needed.

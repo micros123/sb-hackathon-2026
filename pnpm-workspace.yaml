@@ -13,5 +13,6 @@ overrides:
   "vite": "~7.3.5"
 
 allowBuilds:
+  '@parcel/watcher': false
   esbuild: true
   sharp: false

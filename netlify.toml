@@ -1,0 +1,14 @@
+# Netlify deploy config for the astoria Astro app (pnpm monorepo).
+# base = the app dir so Netlify finds the @astrojs/netlify adapter output
+# (dist/ + .netlify/v1/functions). pnpm resolves the workspace from the repo
+# root automatically. DEPLOY_TARGET switches astro.config to the Netlify adapter
+# (the Node adapter stays the default for local/Docker). Set the Storyblok and
+# Anthropic tokens as site environment variables in the Netlify UI, not here.
+[build]
+  base = "packages/apps/astoria"
+  command = "pnpm build:prod"
+
+[build.environment]
+  NODE_VERSION = "24"
+  DEPLOY_TARGET = "netlify"
+  MODE = "production"
