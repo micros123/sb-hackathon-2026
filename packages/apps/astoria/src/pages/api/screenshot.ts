@@ -9,7 +9,7 @@ const readEnv = (key: string): string | undefined =>
 // it as the component's preview image. Server-side proxy so the browser is not
 // blocked by CORS and the URL can be overridden per environment.
 const DEFAULT_WEBHOOK =
-	'https://c3rvcnlibg9rlwvsaxrllxbyzc1ldwmx.flowmotion.storyblok.com/webhook-test/screenshot-single-component';
+	'https://c3rvcnlibg9rlwvsaxrllxbyzc1ldwmx.flowmotion.storyblok.com/webhook/screenshot-single-component';
 
 const json = (body: unknown, status = 200) =>
 	new Response(JSON.stringify(body), {
